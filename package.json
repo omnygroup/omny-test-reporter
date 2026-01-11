@@ -1,0 +1,13 @@
+{
+  "name": "omny-test-reporter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "parse-tests.mjs",
+  "bin": {
+    "omny": "./bin/omny.js"
+  },
+  "scripts": {
+    "start": "node parse-tests.mjs"
+  }
+}

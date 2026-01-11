@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+dist/
+
+# VSCode
+.vscode/
+
+# Editor backups
+*~
+
+# Logs
+logs
+*.log
+npm-debug.log*
+.eslintcache
+
+# Test error reports
+tests-errors/
+test-results-temp.json
