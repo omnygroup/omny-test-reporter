@@ -45,9 +45,9 @@ export class ReportingOrchestrator {
 		};
 
 		try {
-			// Clean all directories at the start
-			await this.#directoryManager.cleanOutputDir('eslint');
-			await this.#directoryManager.cleanOutputDir('typescript');
+			// Clean all directories at the start (remove, don't recreate)
+			await this.#directoryManager.removeOutputDir('eslint');
+			await this.#directoryManager.removeOutputDir('typescript');
 
 			if (this.#config.run === 'eslint') {
 				await this.#runEslint(result);
@@ -60,6 +60,14 @@ export class ReportingOrchestrator {
 
 			// Write combined summary
 			await this.#writeSummary(result);
+
+			// Remove directories if no errors found
+			if (result.eslint?.errors === 0) {
+				await this.#directoryManager.removeOutputDir('eslint');
+			}
+			if (result.typescript?.errors === 0) {
+				await this.#directoryManager.removeOutputDir('typescript');
+			}
 
 			const duration = Date.now() - startTime;
 			this.#logger.info('Diagnostic reporting completed', {

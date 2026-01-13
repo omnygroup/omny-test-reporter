@@ -51,6 +51,21 @@ export class DirectoryManager {
 	}
 
 	/**
+	 * Remove the output directory completely (without recreating)
+	 */
+	public async removeOutputDir(type: 'eslint' | 'typescript'): Promise<void> {
+		const outputDir = this.getOutputDir(type);
+		try {
+			await fs.rm(outputDir, { recursive: true, force: true });
+		} catch (error) {
+			// Ignore errors if directory doesn't exist
+			if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+				throw error;
+			}
+		}
+	}
+
+	/**
 	 * Get file path for a diagnostic file
 	 */
 	public getFilePath(type: 'eslint' | 'typescript', normalizedPath: string): string {
