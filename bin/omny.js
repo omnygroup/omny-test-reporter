@@ -11,9 +11,12 @@ const cmd = args[0];
 function printHelp() {
 	console.log('omny — OmnyFlow developer tools');
 	console.log('\nUsage:');
-	console.log('  omny reporter    Run the test error reporter');
+	console.log('  omny reporter       Run the test error reporter');
+	console.log('  omny diagnostics    Run ESLint and TypeScript diagnostics reporter');
 	console.log('\nExamples:');
 	console.log('  omny reporter');
+	console.log('  omny diagnostics --run all');
+	console.log('  omny diagnostics --run eslint --verbose');
 }
 
 if (!cmd || cmd === 'help' || cmd === '--help' || cmd === '-h') {
@@ -29,6 +32,23 @@ if (args.includes('reporter')) {
 		await import(reporterUrl);
 	} catch (err) {
 		console.error('Failed to start reporter:', err);
+		process.exit(2);
+	}
+	process.exit(0);
+}
+
+if (cmd === 'diagnostics' || cmd === 'report') {
+	// Load and run the diagnostics CLI
+	const cliPath = path.join(__dirname, '..', 'dist', 'cli', 'index.js');
+	try {
+		const cliUrl = pathToFileURL(cliPath).href;
+		const { main } = await import(cliUrl);
+		await main([cmd, ...args.slice(1)]);
+	} catch (err) {
+		console.error('Failed to start diagnostics reporter:', err);
+		if (process.env.DEBUG) {
+			console.error(err);
+		}
 		process.exit(2);
 	}
 	process.exit(0);

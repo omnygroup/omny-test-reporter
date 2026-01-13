@@ -12,9 +12,7 @@ export class TestStatisticsCollector {
 
 	private totalDuration = 0;
 
-	private startTime: number = Date.now();
-
-	private fileStats = new Map<string, { passed: number; failed: number; skipped: number; duration: number }>();
+	private readonly fileStats = new Map<string, { passed: number; failed: number; skipped: number; duration: number }>();
 
 	/**
 	 * Add a passed test
@@ -155,6 +153,5 @@ export class TestStatisticsCollector {
 		this.skippedTests = [];
 		this.totalDuration = 0;
 		this.fileStats.clear();
-		this.startTime = Date.now();
 	}
 }

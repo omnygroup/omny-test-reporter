@@ -1,5 +1,5 @@
 import { mkdir, writeFile, rm } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { join } from 'node:path';
 
 import { logger } from '../logger/Logger.js';
 

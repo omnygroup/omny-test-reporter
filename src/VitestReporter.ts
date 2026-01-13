@@ -77,8 +77,6 @@ class OmnyVitestReporter {
 
 	private readonly fileSystemManager: FileSystemManager;
 
-	private ctx: unknown = null;
-
 	public constructor(config: VitestReporterConfig) {
 		this.config = {
 			format: config.format,
@@ -94,8 +92,7 @@ class OmnyVitestReporter {
 	/**
 	 * Called on reporter initialization
 	 */
-	public onInit(ctx: unknown): void {
-		this.ctx = ctx;
+	public onInit(_ctx: unknown): void {
 		logger.debug('Reporter context initialized');
 	}
 
