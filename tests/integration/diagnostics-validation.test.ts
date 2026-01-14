@@ -9,8 +9,10 @@
  * 5. ESLint results match native tool output
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
 import path from 'node:path';
+
+import { describe, it, expect, beforeEach } from 'vitest';
+
 import { ReportingFacade } from '../../src/reporters/ReportingFacade.js';
 
 describe('Diagnostics Validation Tests', () => {
@@ -29,7 +31,7 @@ describe('Diagnostics Validation Tests', () => {
 
 			// Should succeed without throwing
 			expect(result).toBeDefined();
-			expect(result.success).toBeDefined();
+			expect(result.summary).toBeDefined();
 		});
 
 		it('should collect semantic + pre-emit diagnostics', async () => {
@@ -51,7 +53,7 @@ describe('Diagnostics Validation Tests', () => {
 			});
 
 			// Same error count across runs
-			expect(result1.result.totalErrors).toBe(result2.result.totalErrors);
+			expect(result1.result.summary.totalErrors).toBe(result2.result.summary.totalErrors);
 		});
 	});
 
@@ -62,7 +64,7 @@ describe('Diagnostics Validation Tests', () => {
 			});
 
 			expect(result).toBeDefined();
-			expect(result.success).toBeDefined();
+			expect(result.summary).toBeDefined();
 		});
 
 		it('should respect custom patterns', async () => {
@@ -73,7 +75,7 @@ describe('Diagnostics Validation Tests', () => {
 
 			expect(result).toBeDefined();
 			// Should have analyzed files from src/
-			expect(result.filesWithIssues).toBeDefined();
+			expect(result.diagnostics).toBeDefined();
 		});
 
 		it('should handle multiple patterns', async () => {
@@ -88,8 +90,8 @@ describe('Diagnostics Validation Tests', () => {
 			});
 
 			// Multi-pattern should find more or equal files
-			expect(multiPatternResult.result.filesWithIssues?.length || 0).toBeGreaterThanOrEqual(
-				srcOnlyResult.result.filesWithIssues?.length || 0
+			expect(multiPatternResult.result.summary.totalFiles).toBeGreaterThanOrEqual(
+				srcOnlyResult.result.summary.totalFiles
 			);
 		});
 
@@ -106,8 +108,8 @@ describe('Diagnostics Validation Tests', () => {
 			});
 
 			// With ignore should find same or fewer issues
-			expect((withIgnore.result.filesWithIssues?.length || 0)).toBeLessThanOrEqual(
-				withoutIgnore.result.filesWithIssues?.length || 0
+			expect(withIgnore.result.summary.totalFiles).toBeLessThanOrEqual(
+				withoutIgnore.result.summary.totalFiles
 			);
 		});
 
@@ -123,7 +125,7 @@ describe('Diagnostics Validation Tests', () => {
 			});
 
 			// Same files analyzed both times
-			expect(result1.result.filesWithIssues?.length).toBe(result2.result.filesWithIssues?.length);
+			expect(result1.result.summary.totalFiles).toBe(result2.result.summary.totalFiles);
 		});
 	});
 
@@ -159,8 +161,8 @@ describe('Diagnostics Validation Tests', () => {
 			});
 
 			// Both should analyze same files
-			expect(noPatterns.result.filesWithIssues?.length).toBe(
-				explicitSrc.result.filesWithIssues?.length
+			expect(noPatterns.result.summary.totalFiles).toBe(
+				explicitSrc.result.summary.totalFiles
 			);
 		});
 	});
@@ -187,7 +189,7 @@ describe('Diagnostics Validation Tests', () => {
 				await facade.collectTypeScriptDiagnostics({
 					timeout: 100, // Very short timeout
 				});
-			} catch (error) {
+			} catch {
 				// Should timeout
 				const duration = Date.now() - start;
 				expect(duration).toBeLessThan(5000); // Should fail quickly
@@ -202,8 +204,8 @@ describe('Diagnostics Validation Tests', () => {
 				});
 
 				// Should return result or throw meaningful error
-				expect(result || Error).toBeDefined();
-			} catch (error) {
+				expect(result).toBeDefined();
+			} catch (error: unknown) {
 				// Expected to throw
 				expect(error instanceof Error).toBe(true);
 			}
