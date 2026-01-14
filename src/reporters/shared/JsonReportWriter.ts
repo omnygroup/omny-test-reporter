@@ -26,7 +26,7 @@ export class JsonReportWriter implements ReportWriter {
 		this.#logger = logger;
 	}
 
-	public async writeStream(source: AsyncIterable<Diagnostic>): Promise<WriteStats> {
+	public async writeStream(source: AsyncIterable<Diagnostic>, type: 'eslint' | 'typescript'): Promise<WriteStats> {
 		const startTime = Date.now();
 		const diagnosticsByFile = new Map<string, Diagnostic[]>();
 		const errors: Error[] = [];
@@ -52,11 +52,18 @@ export class JsonReportWriter implements ReportWriter {
 			errors.push(error as Error);
 		}
 
-		// Determine type from first diagnostic
-		const firstDiagnostic = Array.from(diagnosticsByFile.values())[0]?.[0];
-		const type = firstDiagnostic?.source ?? 'eslint';
+		// If no diagnostics, return early without creating directories
+		if (diagnosticsByFile.size === 0) {
+			this.#logger.info('No diagnostics to write');
+			return {
+				filesWritten: 0,
+				bytesWritten: 0,
+				durationMs: Date.now() - startTime,
+				errors,
+			};
+		}
 
-		// Ensure directories exist
+		// Ensure directories exist only when there are diagnostics
 		await this.#directoryManager.ensureDirectories(type);
 
 		// Write files

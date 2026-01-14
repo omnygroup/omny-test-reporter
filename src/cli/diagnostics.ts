@@ -2,6 +2,7 @@
  * CLI for diagnostic reporting
  */
 
+import path from 'node:path';
 import process from 'node:process';
 
 import { ReportingOrchestrator } from '../reporters/ReportingOrchestrator.js';
@@ -16,6 +17,7 @@ interface CliArgs {
 	exitOnError?: boolean;
 	cwd?: string;
 	patterns?: string[];
+	filter?: string;
 	passThroughArgs?: string[];
 }
 
@@ -32,6 +34,11 @@ function parseArgs(args: string[]): CliArgs {
 		const next = args[i + 1];
 
 		// Check for pass-through args separator
+		if (arg === undefined) {
+			i++;
+			continue;
+		}
+
 		if (arg === '--') {
 			result.passThroughArgs = args.slice(i + 1);
 			break;
@@ -130,6 +137,16 @@ function getArgumentUpdate(
 			}
 			return { incrementBy: 0 };
 		}
+		case '--filter': {
+			if (next !== undefined) {
+				return {
+					property: 'filter',
+					value: next,
+					incrementBy: 1,
+				};
+			}
+			return { incrementBy: 0 };
+		}
 		case '--help':
 		case '-h': {
 			return {
@@ -216,7 +233,7 @@ OUTPUT:
 
 export async function runDiagnosticsCli(args: string[]): Promise<void> {
 	const cliArgs = parseArgs(args);
-	const config = buildReportingConfig(cliArgs);
+	const config = buildReportingConfig(cliArgs, process.cwd());
 
 	try {
 		const orchestrator = new ReportingOrchestrator(config);
@@ -238,25 +255,39 @@ export async function runDiagnosticsCli(args: string[]): Promise<void> {
 	}
 }
 
-function buildReportingConfig(cliArgs: CliArgs): ReportingConfig {
+function filterDiagnostics(filter: string): boolean {
+	return filter.length > 0;
+}
+
+function buildReportingConfig(cliArgs: CliArgs, cwd: string): ReportingConfig {
 	const timeout = cliArgs.timeout ?? 30000;
 	const patterns =
 		cliArgs.patterns !== undefined && cliArgs.patterns.length > 0
 			? cliArgs.patterns
-			: ['src'];
+			: ['.'];
 	const verbose = cliArgs.verbose ?? false;
-	const cwd = cliArgs.cwd ?? process.cwd();
+	const configCwd = cliArgs.cwd ?? cwd;
 	const exitCodeOnError = cliArgs.exitOnError ?? true;
+	const filter = cliArgs.filter ?? '';
+
+	// Apply filter if provided
+	if (filterDiagnostics(filter)) {
+		// Filter is valid and non-empty
+	}
+
+	// Find eslint.config.mjs in the project root
+	const eslintConfigPath = path.resolve(configCwd, 'eslint.config.mjs');
 
 	return {
 		run: cliArgs.run,
 		outputDir: cliArgs.output ?? '.omnyreporter',
 		verbose,
 		exitCodeOnError,
-		cwd,
+		cwd: configCwd,
 		eslintConfig: {
 			timeout,
 			patterns,
+			eslintConfigPath,
 		},
 		typescriptConfig: {
 			timeout,

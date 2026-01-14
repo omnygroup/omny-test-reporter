@@ -66,14 +66,14 @@ export class SecurityValidatorImpl implements SecurityValidator {
 		}
 	}
 
-	private #isAllowedBuildDir(normalized: string): boolean {
+	#isAllowedBuildDir(normalized: string): boolean {
 		const relativePath = path.relative(this.#cwd, normalized);
 		const parts = relativePath.split(path.sep);
 		const firstSegment = parts.length > 0 ? parts[0] : undefined;
 		return firstSegment !== undefined && ['node_modules', 'dist', 'build', '.git'].includes(firstSegment);
 	}
 
-	private #isSystemDir(normalized: string): boolean {
+	#isSystemDir(normalized: string): boolean {
 		const systemDirs = ['/etc', '/sys', '/proc', 'C:\\Windows', 'C:\\System'];
 		return systemDirs.some((sysDir) => normalized.startsWith(sysDir));
 	}
@@ -91,7 +91,7 @@ export class SecurityValidatorImpl implements SecurityValidator {
 		return sanitized;
 	}
 
-	private #redactSensitivePatterns(text: string): string {
+	#redactSensitivePatterns(text: string): string {
 		let result = text;
 		for (const pattern of this.#sensitivePatterns) {
 			result = result.replace(pattern, (match) => {
@@ -105,12 +105,12 @@ export class SecurityValidatorImpl implements SecurityValidator {
 		return result;
 	}
 
-	private #replaceCwdWithDot(text: string): string {
+	#replaceCwdWithDot(text: string): string {
 		const cwdPattern = new RegExp(this.#cwd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
 		return text.replace(cwdPattern, '.');
 	}
 
-	private #replaceHomeDir(text: string): string {
+	#replaceHomeDir(text: string): string {
 		const homeDir = os.homedir();
 		const homePattern = new RegExp(homeDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
 		return text.replace(homePattern, '~');

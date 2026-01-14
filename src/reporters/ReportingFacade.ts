@@ -11,7 +11,7 @@ import { SecurityValidatorImpl } from './shared/SecurityValidator.js';
 import { TypeScriptReporterFactory } from './typescript/TypeScriptReporterFactory.js';
 
 import type { EslintConfig } from './eslint/types.js';
-import type { DiagnosticsResult, WriteStats } from './types.js';
+import type { Diagnostic, DiagnosticsResult, WriteStats } from './types.js';
 import type { TypeScriptConfig } from './typescript/types.js';
 
 export class ReportingFacade {
@@ -111,16 +111,13 @@ export class ReportingFacade {
 		
 		const writer = new JsonReportWriter(directoryManager, securityValidator, logger);
 
-		// Clean output directory before writing
-		await directoryManager.cleanOutputDir(type);
-
-		// Write diagnostics as stream
-		async function* diagnosticStream(): AsyncGenerator<unknown, void, unknown> {
+		// Write diagnostics as stream (directories created only if diagnostics exist)
+		async function* diagnosticStream(): AsyncGenerator<Diagnostic, void, unknown> {
 			for (const diagnostic of result.diagnostics) {
 				yield await Promise.resolve(diagnostic);
 			}
 		}
 
-		return writer.writeStream(diagnosticStream());
+		return writer.writeStream(diagnosticStream(), type);
 	}
 }

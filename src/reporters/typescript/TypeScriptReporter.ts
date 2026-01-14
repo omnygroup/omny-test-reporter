@@ -80,7 +80,7 @@ export class TypeScriptReporter extends BaseDiagnosticSource {
 		}
 	}
 
-	public validate(): ValidationStatus {
+	public async validate(): Promise<ValidationStatus> {
 		const errors: string[] = [];
 		const warnings: string[] = [];
 
@@ -110,11 +110,11 @@ export class TypeScriptReporter extends BaseDiagnosticSource {
 			errors.push(`TypeScript validation failed: ${(error as Error).message}`);
 		}
 
-		return {
+		return await Promise.resolve({
 			valid: errors.length === 0,
 			errors,
 			warnings,
-		};
+		});
 	}
 
 	#createEmptyResult(): DiagnosticsResult {

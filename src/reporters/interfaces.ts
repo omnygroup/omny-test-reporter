@@ -81,9 +81,10 @@ export interface ReportWriter {
 	/**
 	 * Write diagnostics from a stream
 	 * @param source - Async iterable of diagnostics
+	 * @param type - Type of diagnostics ('eslint' or 'typescript')
 	 * @returns Promise resolving to write statistics
 	 */
-	writeStream(source: AsyncIterable<Diagnostic>): Promise<WriteStats>;
+	writeStream(source: AsyncIterable<Diagnostic>, type: 'eslint' | 'typescript'): Promise<WriteStats>;
 
 	/**
 	 * Get output path for a specific diagnostic type
