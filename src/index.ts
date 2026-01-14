@@ -1,3 +1,36 @@
-export { createVitestReporter, type VitestReporterConfig } from './VitestReporter.js';
-export { logger, type Logger } from './logger/Logger.js';
-export { sanitizer, SensitiveDataSanitizer } from './utils/SensitiveDataSanitizer.js';
+/**
+ * OmnyReporter - Unified diagnostic and test reporting
+ * 
+ * @packageDocumentation
+ */
+
+import 'reflect-metadata';
+
+// Core layer - types, contracts, abstractions, errors
+export * from './core/index.js';
+
+// Domain layer - business logic, analytics, validation
+export * from './domain/index.js';
+
+// Infrastructure layer - external services
+export * from './infrastructure/index.js';
+
+// Application layer - use-cases and orchestration
+export * from './application/index.js';
+
+// Reporters layer - tool adapters
+export * from './reporters/index.js';
+
+// View layer - CLI and presentation
+// TODO: Fix yargs types and CLI integration
+// export * from './view/index.js';
+
+/**
+ * Version information
+ */
+export const VERSION = '0.2.0';
+
+/**
+ * Package name
+ */
+export const PACKAGE_NAME = '@omnygroup/omnyreporter';
