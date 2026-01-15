@@ -23,7 +23,6 @@ export default defineConfig({
         '**/*.mock.ts',
         '**/index.ts',
         'src/view/**', // Excluded from compilation
-        'src/cli/**',   // Excluded from compilation
       ],
       all: true,
     },
