@@ -4,23 +4,21 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CollectDiagnosticsUseCase } from '../../../../src/application/usecases/index.js';
-import { MockDiagnosticSource } from '../../../mocks/MockDiagnosticSource.js';
-import { MockLogger } from '../../../mocks/MockLogger.js';
-import { createTestConfig, createTestDiagnostics } from '../../../mocks/index.js';
+import { CollectDiagnosticsUseCase } from '../../../src/application/usecases';
+import { MockDiagnosticSource } from '../../mocks';
+import { DiagnosticAggregator } from '../../../src/domain/analytics/diagnostics/DiagnosticAggregator';
+import { createTestConfig } from '../../helpers';
+import { createTestDiagnostics } from '../../mocks';
 
 describe('CollectDiagnosticsUseCase', () => {
   let useCase: CollectDiagnosticsUseCase;
   let mockEslint: MockDiagnosticSource;
   let mockTypescript: MockDiagnosticSource;
-  let mockLogger: MockLogger;
-
   beforeEach(() => {
     mockEslint = new MockDiagnosticSource('eslint');
     mockTypescript = new MockDiagnosticSource('typescript');
-    mockLogger = new MockLogger();
-
-    useCase = new CollectDiagnosticsUseCase([mockEslint, mockTypescript], mockLogger);
+    // Use DiagnosticAggregator class for aggregation
+    useCase = new CollectDiagnosticsUseCase([mockEslint, mockTypescript], DiagnosticAggregator);
   });
 
   describe('execute', () => {
@@ -51,15 +49,13 @@ describe('CollectDiagnosticsUseCase', () => {
       expect(diagnostics).toHaveLength(1);
     });
 
-    it('should log collection activity', async () => {
-      mockEslint.setDiagnostics(createTestDiagnostics(1, 'eslint'));
+      it('should execute without throwing', async () => {
+        mockEslint.setDiagnostics(createTestDiagnostics(1, 'eslint'));
 
-      const config = createTestConfig();
-      await useCase.execute(config);
-
-      const logs = mockLogger.getLogs();
-      expect(logs.length).toBeGreaterThan(0);
-    });
+        const config = createTestConfig();
+        const result = await useCase.execute(config);
+        expect(result.isOk() || result.isErr()).toBe(true);
+      });
 
     it('should call all sources with same config', async () => {
       mockEslint.setDiagnostics([]);

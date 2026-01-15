@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { DiagnosticAggregator } from '../../../../src/domain/analytics/diagnostics/index.js';
-import { createTestDiagnostics } from '../../../mocks/index.js';
+import { DiagnosticAggregator } from '../../../../src/domain/analytics/diagnostics/index';
+import { createTestDiagnostics } from '../../../mocks/index';
 
 describe('DiagnosticAggregator', () => {
   describe('aggregate', () => {

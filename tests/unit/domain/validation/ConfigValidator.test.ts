@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { ConfigValidator } from '../../../../src/domain/validation/index.js';
-import { createTestConfig } from '../../../helpers/index.js';
+import { ConfigValidator } from '../../../../src/domain/validation/index';
+import { createTestConfig } from '../../../helpers/index';
 
 describe('ConfigValidator', () => {
   const validator = new ConfigValidator();

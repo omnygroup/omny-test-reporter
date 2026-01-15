@@ -11,8 +11,8 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { ReportingFacade } from '../../src/reporters/ReportingFacade.js';
-import { getContainer, resetContainer } from '../../src/container.js';
+import { ReportingFacade } from '../../src/reporters/ReportingFacade';
+import { getContainer, resetContainer } from '../../src/container';
 
 describe('Diagnostics Validation Tests', () => {
 	let facade: ReportingFacade;

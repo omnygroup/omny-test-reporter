@@ -1,0 +1,29 @@
+/**
+ * Central DI tokens to avoid circular imports
+ */
+export const TOKENS = {
+  Logger: Symbol.for('ILogger'),
+  FileSystem: Symbol.for('IFileSystem'),
+  DirectoryService: Symbol.for('DirectoryService'),
+  JsonWriter: Symbol.for('JsonWriter'),
+  StreamWriter: Symbol.for('StreamWriter'),
+  PathService: Symbol.for('IPathService'),
+  Sanitizer: Symbol.for('ISanitizer'),
+  PathValidator: Symbol.for('PathValidator'),
+  ConsoleFormatter: Symbol.for('ConsoleFormatter'),
+  JsonFormatter: Symbol.for('JsonFormatter'),
+  TableFormatter: Symbol.for('TableFormatter'),
+  DiagnosticAggregator: Symbol.for('DiagnosticAggregator'),
+  ConfigValidator: Symbol.for('ConfigValidator'),
+  EslintAdapter: Symbol.for('EslintAdapter'),
+  TypeScriptAdapter: Symbol.for('TypeScriptAdapter'),
+  VitestAdapter: Symbol.for('VitestAdapter'),
+  TypeScriptAnalytics: Symbol.for('TypeScriptAnalytics'),
+  DiagnosticAnalytics: Symbol.for('DiagnosticAnalytics'),
+  ReportingOrchestrator: Symbol.for('ReportingOrchestrator'),
+  ReportingFacade: Symbol.for('ReportingFacade'),
+  ConsoleLogger: Symbol.for('ConsoleLogger'),
+  FileWriter: Symbol.for('FileWriter'),
+  CollectDiagnosticsUseCase: Symbol.for('CollectDiagnosticsUseCase'),
+  GenerateReportUseCase: Symbol.for('GenerateReportUseCase'),
+} as const;

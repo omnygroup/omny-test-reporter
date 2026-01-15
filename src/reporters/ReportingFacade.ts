@@ -16,7 +16,7 @@ import { DiagnosticError, ok, err } from '../core/index.js';
 import type { TestStatistics } from '../core/index.js';
 import type { CollectionConfig } from '../domain/index.js';
 import { ReportingOrchestrator } from './ReportingOrchestrator.js';
-import { TOKENS } from '../container.js';
+import { TOKENS } from '../diTokens.js';
 
 /**
  * Result structure for reporting facade operations
@@ -142,6 +142,7 @@ export class ReportingFacade {
    */
   public async collectTypeScriptDiagnostics(_config: { timeout?: number }): Promise<{ result: DiagnosticsResult }> {
     try {
+      this.orchestrator.reset();
       await this.orchestrator.runTypeScript('tsconfig.json');
       const result = this.orchestrator.getResults();
       const diagnostics = result.diagnostics.diagnostics.filter(d => d.source === 'typescript');
@@ -175,6 +176,7 @@ export class ReportingFacade {
   public async collectEslintDiagnostics(config: { patterns?: string[]; timeout?: number }): Promise<{ result: DiagnosticsResult }> {
     try {
       const patterns = config.patterns || ['src'];
+      this.orchestrator.reset();
       await this.orchestrator.runEslint(patterns, undefined);
       const result = this.orchestrator.getResults();
       const diagnostics = result.diagnostics.diagnostics.filter(d => d.source === 'eslint');
@@ -207,6 +209,7 @@ export class ReportingFacade {
    */
   public async collectAll(/* config?: { timeout?: number } */): Promise<{ result: DiagnosticsResult }> {
     try {
+      this.orchestrator.reset();
       await this.orchestrator.runEslint(['src'], undefined);
       await this.orchestrator.runTypeScript('tsconfig.json');
       const result = this.orchestrator.getResults();

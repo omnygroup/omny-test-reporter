@@ -5,7 +5,8 @@
 
 import type { Arguments, CommandBuilder, Argv } from 'yargs';
 
-import { getContainer, TOKENS } from '../../../container.js';
+import { getContainer } from '../../../container.js';
+import { TOKENS } from '../../../diTokens.js';
 import type { ILogger, Diagnostic } from '../../../core/index.js';
 import type { IFormatter } from '../../../core/index.js';
 import type { CollectionConfig } from '../../../domain/index.js';

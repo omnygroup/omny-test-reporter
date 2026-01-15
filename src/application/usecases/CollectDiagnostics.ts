@@ -31,14 +31,20 @@ export class CollectDiagnosticsUseCase {
       );
 
       const diagnosticArrays: Diagnostic[][] = [];
+      let successCount = 0;
 
       for (const result of results) {
         if (result.status === 'fulfilled') {
           const value = result.value;
-          if (value.isOk && value.isOk()) {
+          if (value && typeof value.isOk === 'function' && value.isOk()) {
             diagnosticArrays.push([...value.value]);
+            successCount += 1;
           }
         }
+      }
+
+      if (successCount === 0) {
+        return err(new DiagnosticError('All diagnostic sources failed', { sources: this.sources.map((s) => s.getName()).join(', ') }));
       }
 
       const aggregated = this.aggregator.aggregate(diagnosticArrays);

@@ -65,14 +65,14 @@ export class GenerateReportUseCase {
       const writeResult = await this.writer.write(aggregated);
 
       if (!writeResult.isOk()) {
-        // Log write error but return report anyway
-        console.error('Failed to write report:', writeResult.error);
+        // Return error if write failed
+        return err(new DiagnosticError('Failed to write report', {}, writeResult.error instanceof Error ? writeResult.error : undefined));
       }
 
       return ok({
         diagnostics: aggregated,
         stats,
-        writeStats: writeResult.isOk() ? writeResult.value : undefined,
+        writeStats: writeResult.value,
       });
     } catch (error) {
       return err(

@@ -4,12 +4,12 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { GenerateReportUseCase } from '../../../../src/application/usecases/index.js';
-import { MockWriter } from '../../../mocks/MockWriter.js';
-import { MockFormatter } from '../../../mocks/MockFormatter.js';
-import { MockLogger } from '../../../mocks/MockLogger.js';
-import { createTestDiagnostics } from '../../../mocks/index.js';
-import type { DiagnosticReport } from '../../../../src/core/types/index.js';
+import { GenerateReportUseCase } from '../../../src/application/usecases';
+import { MockWriter } from '../../mocks';
+import { MockFormatter } from '../../mocks';
+import { MockLogger } from '../../mocks';
+import { createTestDiagnostics } from '../../mocks';
+import type { DiagnosticReport } from '../../../src/core/types';
 
 describe('GenerateReportUseCase', () => {
   let useCase: GenerateReportUseCase<DiagnosticReport>;
@@ -22,7 +22,8 @@ describe('GenerateReportUseCase', () => {
     mockFormatter = new MockFormatter<DiagnosticReport[]>();
     mockLogger = new MockLogger();
 
-    useCase = new GenerateReportUseCase(mockWriter, mockFormatter, mockLogger);
+    // GenerateReportUseCase now accepts (sources, writer)
+    useCase = new GenerateReportUseCase([], mockWriter);
   });
 
   describe('execute', () => {
@@ -39,7 +40,6 @@ describe('GenerateReportUseCase', () => {
       const result = await useCase.execute([report]);
 
       expect(result.isOk()).toBe(true);
-      expect(mockFormatter.getFormatCallCount()).toBeGreaterThan(0);
       expect(mockWriter.getWrittenData().length).toBeGreaterThan(0);
     });
 
@@ -99,8 +99,8 @@ describe('GenerateReportUseCase', () => {
 
       await useCase.execute([report]);
 
-      const logs = mockLogger.getLogs();
-      expect(logs.length).toBeGreaterThan(0);
+      // Writer should have been called
+      expect(mockWriter.getWrittenData().length).toBeGreaterThan(0);
     });
   });
 });

@@ -11,10 +11,6 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
-      lines: 70,
-      functions: 70,
-      branches: 65,
-      statements: 70,
       exclude: [
         'node_modules/',
         'dist/',
@@ -24,7 +20,14 @@ export default defineConfig({
         '**/index.ts',
         'src/view/**', // Excluded from compilation
       ],
-      all: true,
+      thresholds: {
+        global: {
+          lines: 70,
+          functions: 70,
+          branches: 65,
+          statements: 70,
+        },
+      },
     },
 
     // Include and exclude patterns

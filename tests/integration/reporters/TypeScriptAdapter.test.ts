@@ -4,9 +4,9 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { TypeScriptReporter } from '../../../../src/reporters/typescript/TypeScriptReporter.js';
-import { MockLogger } from '../../../mocks/MockLogger.js';
-import { createTestConfig } from '../../../helpers/index.js';
+import { TypeScriptReporter } from '../../../src/reporters/typescript';
+import { MockLogger } from '../../mocks';
+import { createTestConfig } from '../../helpers';
 
 describe('TypeScriptReporter', () => {
   let reporter: TypeScriptReporter;
@@ -37,22 +37,22 @@ describe('TypeScriptReporter', () => {
         patterns: ['src/**/*.ts'],
       });
 
-      const result = await adapter.collect(config);
+      const result = await reporter.collect(config);
 
       expect(result.isOk() || result.isErr()).toBe(true);
     });
 
     it('should return array of TypeScript diagnostics', async () => {
       const config = createTestConfig();
-      const result = await adapter.collect(config);
+      const result = await reporter.collect(config);
 
       if (result.isOk()) {
         const diagnostics = result._unsafeUnwrap();
         expect(Array.isArray(diagnostics)).toBe(true);
         // All diagnostics should have typescript source
-        diagnostics.forEach((diag) => {
+        diagnostics.forEach((diag: any) => {
           if ('source' in diag) {
-            expect(['typescript']).toContain(diag.source);
+            expect(['typescript']).toContain((diag as any).source);
           }
         });
       }
@@ -63,7 +63,7 @@ describe('TypeScriptReporter', () => {
         patterns: ['nonexistent/**'],
       });
 
-      const result = await adapter.collect(config);
+      const result = await reporter.collect(config);
 
       // Should not throw, return either Ok or Err
       expect(result.isOk() || result.isErr()).toBe(true);
@@ -73,7 +73,7 @@ describe('TypeScriptReporter', () => {
   describe('logging', () => {
     it('should log diagnostic collection', async () => {
       const config = createTestConfig();
-      await adapter.collect(config);
+      await reporter.collect(config);
 
       const logs = mockLogger.getLogs();
       expect(logs.length).toBeGreaterThan(0);

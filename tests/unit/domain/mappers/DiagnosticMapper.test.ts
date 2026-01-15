@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { DiagnosticMapper } from '../../../../src/domain/mappers/index.js';
-import { createTestDiagnostics } from '../../../mocks/index.js';
+import { DiagnosticMapper } from '../../../../src/domain/mappers/index';
+import { createTestDiagnostics } from '../../../mocks/index';
 
 describe('DiagnosticMapper', () => {
   describe('toDomain', () => {

@@ -4,9 +4,9 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DiagnosticAnalytics } from '../../../../src/domain/analytics/diagnostics/index.js';
-import { createTestDiagnostics } from '../../../mocks/index.js';
-import type { Diagnostic } from '../../../../src/core/types/index.js';
+import { DiagnosticAnalytics } from '../../../../src/domain/analytics/diagnostics/index';
+import { createTestDiagnostics } from '../../../mocks/index';
+import type { Diagnostic } from '../../../../src/core/types';
 
 describe('DiagnosticAnalytics', () => {
   let analytics: DiagnosticAnalytics;
