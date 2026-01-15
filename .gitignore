@@ -27,11 +27,3 @@ npm-debug.log*
 # dist
 dist/
 build/
-# Compiled test artifacts (when tests are compiled in-place)
-tests/**/*.js
-tests/**/*.js.map
-tests/**/*.d.ts
-
-# Compiled config artifacts
-vitest.config.js
-vitest.config.js.map

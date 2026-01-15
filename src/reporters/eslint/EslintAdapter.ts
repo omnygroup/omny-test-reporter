@@ -28,7 +28,11 @@ export class EslintAdapter {
 
       const eslint = new ESLint({
         overrideConfigFile: configPath ?? undefined,
+        cwd: process.cwd(),
+        // Ensure plugins and configs resolve relative to project root
       });
+      // keep instance for potential cleanup
+      this.eslint = eslint;
 
       let results = [] as any[];
       try {
@@ -65,16 +69,21 @@ export class EslintAdapter {
       this.logger.info('ESLint completed', { issuesFound: mapped.length });
 
       return mapped;
-    } catch (error) {
-      throw new DiagnosticError(
-        'ESLint linting failed',
-        { source: 'eslint' },
-        error instanceof Error ? error : undefined
-      );
-    } finally {
-      if (this.eslint) {
-        await this.eslint.lintFiles([]);
+      } catch (error) {
+        // Propagate ESLint errors so the CLI can report failures (parsing/config issues)
+        throw new DiagnosticError(
+          'ESLint linting failed',
+          { source: 'eslint' },
+          error instanceof Error ? error : undefined
+        );
+      } finally {
+        if (this.eslint) {
+          try {
+            await this.eslint.lintFiles([]);
+          } catch (_) {
+            // ignore cleanup errors
+          }
+        }
       }
-    }
   }
 }
