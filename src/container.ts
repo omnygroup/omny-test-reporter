@@ -46,6 +46,7 @@ import { TypeScriptAdapter } from './reporters/typescript/TypeScriptAdapter.js';
 import { VitestAdapter } from './reporters/vitest/VitestAdapter.js';
 import { ReportingOrchestrator } from './reporters/ReportingOrchestrator.js';
 import { ReportingFacade } from './reporters/ReportingFacade.js';
+import { TOKENS } from './diTokens.js';
 
 // Domain - Analytics (diagnostics collector)
 import { DiagnosticAnalytics } from './domain/analytics/diagnostics/DiagnosticAnalytics.js';
@@ -55,47 +56,7 @@ import { CollectDiagnosticsUseCase } from './application/usecases/CollectDiagnos
 import { GenerateReportUseCase } from './application/usecases/GenerateReport.js';
 
 // Define dependency injection tokens
-export const TOKENS = {
-  // Logger
-  Logger: Symbol.for('ILogger'),
-  
-  // FileSystem
-  FileSystem: Symbol.for('IFileSystem'),
-  DirectoryService: Symbol.for('DirectoryService'),
-  JsonWriter: Symbol.for('JsonWriter'),
-  StreamWriter: Symbol.for('StreamWriter'),
-  
-  // Paths
-  PathService: Symbol.for('IPathService'),
-  
-  // Security
-  Sanitizer: Symbol.for('ISanitizer'),
-  PathValidator: Symbol.for('PathValidator'),
-  
-  // Formatting
-  ConsoleFormatter: Symbol.for('ConsoleFormatter'),
-  JsonFormatter: Symbol.for('JsonFormatter'),
-  TableFormatter: Symbol.for('TableFormatter'),
-  
-  // Domain
-  DiagnosticAggregator: Symbol.for('DiagnosticAggregator'),
-  ConfigValidator: Symbol.for('ConfigValidator'),
-  
-  // Reporters
-  EslintAdapter: Symbol.for('EslintAdapter'),
-  TypeScriptAdapter: Symbol.for('TypeScriptAdapter'),
-  VitestAdapter: Symbol.for('VitestAdapter'),
-  TypeScriptAnalytics: Symbol.for('TypeScriptAnalytics'),
-  DiagnosticAnalytics: Symbol.for('DiagnosticAnalytics'),
-  ReportingOrchestrator: Symbol.for('ReportingOrchestrator'),
-  ReportingFacade: Symbol.for('ReportingFacade'),
-  ConsoleLogger: Symbol.for('ConsoleLogger'),
-  FileWriter: Symbol.for('FileWriter'),
-  
-  // Use Cases
-  CollectDiagnosticsUseCase: Symbol.for('CollectDiagnosticsUseCase'),
-  GenerateReportUseCase: Symbol.for('GenerateReportUseCase'),
-} as const;
+// TOKENS moved to src/diTokens.ts to avoid circular imports
 
 let containerInstance: Container | null = null;
 
@@ -106,8 +67,11 @@ let containerInstance: Container | null = null;
 export function setupContainer(): Container {
   const container = new Container({ defaultScope: 'Singleton' });
 
-  // Register Logger as singleton
-  container.bind<ILogger>(TOKENS.Logger).to(PinoLogger).inSingletonScope();
+  // Register Logger as singleton (use factory to avoid constructor metadata issues)
+    container
+      .bind<ILogger>(TOKENS.Logger)
+      .toDynamicValue(() => new PinoLogger())
+      .inSingletonScope();
   // Also provide a ConsoleLogger as an alternative singleton implementation
   container.bind<ILogger>(TOKENS.ConsoleLogger).to(ConsoleLogger).inSingletonScope();
 
@@ -121,10 +85,10 @@ export function setupContainer(): Container {
   container.bind<ISanitizer>(TOKENS.Sanitizer).to(RedactSanitizer).inSingletonScope();
 
   // Register PathValidator as singleton
-  container.bind(TOKENS.PathValidator).to(PathValidator).inSingletonScope();
+  container.bind(TOKENS.PathValidator).toDynamicValue(() => new PathValidator(container.get(TOKENS.PathService))).inSingletonScope();
 
   // Register DirectoryService as singleton
-  container.bind(TOKENS.DirectoryService).to(DirectoryService).inSingletonScope();
+  container.bind(TOKENS.DirectoryService).toDynamicValue(() => new DirectoryService(container.get(TOKENS.FileSystem))).inSingletonScope();
 
   // Register Formatters
   container.bind(TOKENS.ConsoleFormatter).to(ConsoleFormatter).inTransientScope();
@@ -132,8 +96,8 @@ export function setupContainer(): Container {
   container.bind(TOKENS.TableFormatter).to(TableFormatter).inTransientScope();
 
   // Register Writers as transient
-  container.bind(TOKENS.JsonWriter).to(JsonWriter).inTransientScope();
-  container.bind(TOKENS.StreamWriter).to(StreamWriter).inTransientScope();
+  container.bind(TOKENS.JsonWriter).toDynamicValue(() => new JsonWriter(container.get(TOKENS.FileSystem), process.cwd())).inTransientScope();
+  container.bind(TOKENS.StreamWriter).toDynamicValue(() => new StreamWriter(container.get(TOKENS.FileSystem), process.cwd())).inTransientScope();
 
   // Register DiagnosticAggregator as constant (it only has static methods)
   container.bind(TOKENS.DiagnosticAggregator).toConstantValue(DiagnosticAggregator);
