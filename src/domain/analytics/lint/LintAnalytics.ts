@@ -3,7 +3,7 @@
  * @module domain/analytics/lint/LintAnalytics
  */
 
-import { BaseAnalyticsCollector ,type  Diagnostic } from '../../../core/index.js';
+import { BaseAnalyticsCollector ,type  Diagnostic } from '@core';
 
 import { LintStatisticsCalculator } from './LintStatisticsCalculator.js';
 

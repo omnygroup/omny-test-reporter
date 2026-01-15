@@ -4,11 +4,11 @@
  * @module reporters/vitest/VitestAdapter
  */
 
-import { TestAnalytics } from '../../domain/analytics/tests/TestAnalytics.js';
+import { TestAnalytics } from '@domain/analytics/tests/TestAnalytics';
 
 import { TaskProcessor ,type  TestResult } from './TaskProcessor.js';
 
-import type { ILogger } from '../../core/index.js';
+import type { ILogger } from '@core';
 
 
 /**

@@ -4,7 +4,7 @@
  */
 
 import type { LintStatistics } from './types.js';
-import type { Diagnostic } from '../../../core/index.js';
+import type { Diagnostic } from '@core';
 
 /**
  * Calculates lint-specific statistics from diagnostics
