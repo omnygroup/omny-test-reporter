@@ -5,7 +5,7 @@
 
 import { injectable } from 'inversify';
 
-import { BaseAnalyticsCollector ,type  Diagnostic } from '../../../core/index.js';
+import { BaseAnalyticsCollector ,type  Diagnostic } from '@core';
 
 import { TypeScriptStatisticsCalculator } from './TypeScriptStatisticsCalculator.js';
 
@@ -58,4 +58,3 @@ export class TypeScriptAnalytics extends BaseAnalyticsCollector<Diagnostic, Type
     super.reset();
   }
 }
-

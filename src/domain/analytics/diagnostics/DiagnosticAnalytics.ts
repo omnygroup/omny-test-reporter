@@ -3,8 +3,8 @@
  * @module domain/analytics/diagnostics/DiagnosticAnalytics
  */
 
-import { BaseAnalyticsCollector ,type  Diagnostic,type  DiagnosticStatistics } from '../../../core/index.js';
-import { StatisticsCalculator } from '../base/index.js';
+import { BaseAnalyticsCollector ,type  Diagnostic,type  DiagnosticStatistics } from '@core';
+import { StatisticsCalculator } from '@domain/analytics/base/index.js';
 
 /**
  * Analytics collector for diagnostics

@@ -6,17 +6,17 @@
 
 import { injectable, inject } from 'inversify';
 
-import { type ILogger, type DiagnosticStatistics, type TestStatistics ,type  Diagnostic } from '../core/index.js';
-import { TOKENS } from '../diTokens.js';
-import { DiagnosticAnalytics } from '../domain/analytics/diagnostics/DiagnosticAnalytics.js';
+import { type ILogger, type DiagnosticStatistics, type TestStatistics ,type  Diagnostic } from '@core';
+import { TOKENS } from '@/diTokens';
+import { DiagnosticAnalytics } from '@domain/analytics/diagnostics/DiagnosticAnalytics';
 
-import { EslintAdapter } from './eslint/EslintAdapter.js';
-import { TypeScriptAdapter } from './typescript/TypeScriptAdapter.js';
-import { VitestAdapter } from './vitest/VitestAdapter.js';
+import { EslintAdapter } from '@reporters/eslint/EslintAdapter';
+import { TypeScriptAdapter } from '@reporters/typescript/TypeScriptAdapter';
+import { VitestAdapter } from '@reporters/vitest/VitestAdapter';
 
 
 
-import type { TestResult } from './vitest/TaskProcessor.js';
+import type { TestResult } from '@reporters/vitest/TaskProcessor';
 
 /**
  * Result of orchestrated reporting

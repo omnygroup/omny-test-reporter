@@ -4,8 +4,8 @@
  * @module application/usecases/CollectDiagnostics
  */
 
-import { DiagnosticError, ok, err ,type  IDiagnosticSource,type  Diagnostic ,type  Result } from '../../core/index.js';
-import { type CollectionConfig , DiagnosticAggregator } from '../../domain/index.js';
+import { DiagnosticError, ok, err ,type  IDiagnosticSource,type  Diagnostic ,type  Result } from '@core';
+import { type CollectionConfig , DiagnosticAggregator } from '@domain';
 
 /**
  * Use-case for collecting diagnostics from multiple sources

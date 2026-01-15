@@ -4,13 +4,13 @@
  */
 
 
-import { CollectDiagnosticsUseCase } from '../../../application/usecases/CollectDiagnostics.js';
-import { getContainer } from '../../../container.js';
-import { type ILogger, type Diagnostic ,type  IFormatter } from '../../../core/index.js';
-import { TOKENS } from '../../../diTokens.js';
-import { DiagnosticAggregator } from '../../../domain/analytics/diagnostics/DiagnosticAggregator.js';
-import { EslintReporter } from '../../../reporters/eslint/EslintReporter.js';
-import { TypeScriptReporter } from '../../../reporters/typescript/TypeScriptReporter.js';
+import { CollectDiagnosticsUseCase } from '@application/usecases/CollectDiagnostics';
+import { getContainer } from '@/container';
+import { type ILogger, type Diagnostic ,type  IFormatter } from '@core';
+import { TOKENS } from '@/diTokens';
+import { DiagnosticAggregator } from '@domain/analytics/diagnostics/DiagnosticAggregator';
+import { EslintReporter } from '@reporters/eslint/EslintReporter';
+import { TypeScriptReporter } from '@reporters/typescript/TypeScriptReporter';
 
 import type { CollectionConfig } from '../../../domain/index.js';
 import type { Arguments, CommandBuilder, Argv } from 'yargs';

@@ -3,7 +3,7 @@
  * @module domain/analytics/typescript/types
  */
 
-import type { StatisticsBase } from '../../../core/index.js';
+import type { StatisticsBase } from '@core';
 
 /**
  * Statistics specific to TypeScript diagnostics
@@ -16,4 +16,3 @@ export interface TypeScriptStatistics extends StatisticsBase {
   readonly totalByCode: Record<string, number>;
   readonly mostCommonErrorCodes: { readonly code: string; readonly count: number }[];
 }
-

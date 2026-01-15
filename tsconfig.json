@@ -1,5 +1,21 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@application/*": ["src/application/*"],
+      "@core/*": ["src/core/*"],
+      "@core": ["src/core/index.ts"],
+      "@domain/*": ["src/domain/*"],
+      "@domain": ["src/domain/index.ts"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@reporters/*": ["src/reporters/*"],
+      "@view/*": ["src/view/*"],
+      "@tests/*": ["tests/*"],
+      "@utils/*": ["src/core/utils/*"],
+      "@types/*": ["src/core/types/*"],
+      "@config": ["src/core/types/config.ts"]
+    },
     "target": "ES2022",
     "module": "ESNext",
     "lib": ["ES2022"],

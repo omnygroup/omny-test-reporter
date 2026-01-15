@@ -3,11 +3,11 @@
  * @module domain/analytics/tests/TestAnalytics
  */
 
-import { BaseAnalyticsCollector ,type  TestStatistics } from '../../../core/index.js';
+import { BaseAnalyticsCollector ,type  TestStatistics } from '@core';
 
 import { TestStatisticsCalculator } from './TestStatisticsCalculator.js';
 
-import type { TestResult } from '../../../reporters/vitest/TaskProcessor.js';
+import type { TestResult } from '@reporters/vitest/TaskProcessor';
 
 
 /**

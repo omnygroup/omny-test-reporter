@@ -2,7 +2,7 @@
  * ESLint configuration types
  */
 
-import type { CollectionConfig } from '../../domain/index.js';
+import type { CollectionConfig } from '@domain';
 
 /**
  * ESLint-specific configuration

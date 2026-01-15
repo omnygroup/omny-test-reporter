@@ -3,7 +3,7 @@
  * @module domain/analytics/base/StatisticsCalculator
  */
 
-import type { Diagnostic, DiagnosticStatistics } from '../../../core/index.js';
+import type { Diagnostic, DiagnosticStatistics } from '@core';
 
 /**
  * Utility for calculating diagnostic statistics

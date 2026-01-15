@@ -3,8 +3,8 @@
  * @module domain/analytics/tests/TestStatisticsCalculator
  */
 
-import type { TestStatistics } from '../../../core/index.js';
-import type { TestResult } from '../../../reporters/vitest/TaskProcessor.js';
+import type { TestStatistics } from '@core';
+import type { TestResult } from '@reporters/vitest/TaskProcessor';
 
 /**
  * Calculates statistics from test results

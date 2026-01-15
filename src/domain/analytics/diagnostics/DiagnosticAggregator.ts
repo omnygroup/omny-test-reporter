@@ -4,7 +4,7 @@
  * @module domain/analytics/diagnostics/DiagnosticAggregator
  */
 
-import type { Diagnostic } from '../../../core/index.js';
+import type { Diagnostic } from '@core';
 
 export interface SeverityCount {
   readonly error: number;

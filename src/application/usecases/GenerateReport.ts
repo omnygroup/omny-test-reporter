@@ -10,8 +10,8 @@ import { DiagnosticError, ok, err ,type
   Diagnostic,type 
   Result,type 
   WriteStats,
-} from '../../core/index.js';
-import { type CollectionConfig , DiagnosticAnalytics, DiagnosticAggregator } from '../../domain/index.js';
+} from '@core';
+import { type CollectionConfig , DiagnosticAnalytics, DiagnosticAggregator } from '@domain';
 
 /**
  * Result of report generation
