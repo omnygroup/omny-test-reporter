@@ -22,7 +22,7 @@ export class StreamWriter<T> implements IWriter<AsyncIterable<T>> {
 
   public async write(
     data: AsyncIterable<T>,
-    options: WriteOptions = {}
+    options: WriteOptions
   ): Promise<Result<WriteStats, Error>> {
     try {
       const items: T[] = [];
@@ -31,7 +31,7 @@ export class StreamWriter<T> implements IWriter<AsyncIterable<T>> {
         items.push(item);
       }
 
-      const filePath = resolve(this.basePath, 'stream-report.json');
+      const filePath = resolve(this.basePath, options.fileName);
       const stats = await this.fileSystem.writeJson(filePath, items, options);
 
       return ok(stats);

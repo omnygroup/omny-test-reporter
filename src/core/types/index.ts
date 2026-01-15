@@ -29,6 +29,7 @@ export {
 
 export type {
   BaseConfig,
+  FileOperationOptions,
   WriteOptions,
   WriteStats,
 } from './config.js';

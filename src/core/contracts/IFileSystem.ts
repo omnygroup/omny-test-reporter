@@ -3,7 +3,7 @@
  * @module core/contracts/IFileSystem
  */
 
-import type { WriteStats, WriteOptions } from '../types/index.js';
+import type { WriteStats, FileOperationOptions } from '../types/index.js';
 
 export interface IFileSystem {
   /**
@@ -34,7 +34,7 @@ export interface IFileSystem {
    * @param options Write options
    * @returns Write statistics
    */
-  writeFile(path: string, data: string | Buffer, options?: WriteOptions): Promise<WriteStats>;
+  writeFile(path: string, data: string | Buffer, options?: FileOperationOptions): Promise<WriteStats>;
 
   /**
    * Write JSON file atomically
@@ -43,7 +43,7 @@ export interface IFileSystem {
    * @param options Write options
    * @returns Write statistics
    */
-  writeJson(path: string, data: unknown, options?: WriteOptions): Promise<WriteStats>;
+  writeJson(path: string, data: unknown, options?: FileOperationOptions): Promise<WriteStats>;
 
   /**
    * Ensure directory exists (create if needed)

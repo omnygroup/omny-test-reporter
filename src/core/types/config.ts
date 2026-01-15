@@ -18,11 +18,16 @@ export interface CollectionConfig extends BaseConfig {
   readonly ignorePatterns?: readonly string[];
 }
 
-/** Options for file operations */
-export interface WriteOptions {
+/** Options for file operations (low-level) */
+export interface FileOperationOptions {
   readonly atomic?: boolean;
   readonly ensureDir?: boolean;
   readonly overwrite?: boolean;
+}
+
+/** Options for writer operations (must include fileName) */
+export interface WriteOptions extends FileOperationOptions {
+  readonly fileName: string;
 }
 
 /** Statistics about write operations */

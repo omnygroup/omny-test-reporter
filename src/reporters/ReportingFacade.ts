@@ -96,7 +96,7 @@ export class ReportingFacade {
 
       // Write diagnostics to file/stream
       let written = false;
-      const writeResult = await this.writer.write(diagnostics);
+      const writeResult = await this.writer.write(diagnostics, { fileName: 'diagnostics.json' });
       if (writeResult.isOk()) {
         written = true;
         this.logger.info('Diagnostics written successfully', {

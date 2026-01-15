@@ -23,13 +23,13 @@ export class FileWriter implements IWriter<unknown> {
   }
 
   /**
-   * Write data serialized as JSON to a file named 'diagnostics.json'
+   * Write data serialized as JSON to a file
    * @param data Data to write
-   * @param options Write options to control behaviour
+   * @param options Write options including required fileName
    * @returns Result with WriteStats or FileSystemError
    */
-  public async write(data: unknown, options: WriteOptions = {}): Promise<Result<WriteStats, FileSystemError>> {
-    const filePath: string = resolve(this.basePath, 'diagnostics.json');
+  public async write(data: unknown, options: WriteOptions): Promise<Result<WriteStats, FileSystemError>> {
+    const filePath: string = resolve(this.basePath, options.fileName);
     const start: number = Date.now();
 
     try {

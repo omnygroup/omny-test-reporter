@@ -9,7 +9,7 @@ import { resolve, dirname } from 'node:path';
 import * as fsExtra from 'fs-extra';
 import { injectable } from 'inversify';
 
-import { FileSystemError ,type  WriteStats,type  WriteOptions ,type  IFileSystem } from '../../core/index.js';
+import { FileSystemError ,type  WriteStats,type  FileOperationOptions ,type  IFileSystem } from '../../core/index.js';
 
 /**
  * File system implementation using Node.js fs module
@@ -45,7 +45,7 @@ export class NodeFileSystem implements IFileSystem {
   public async writeFile(
     path: string,
     data: string | Buffer,
-    options: WriteOptions = {}
+    options: FileOperationOptions = {}
   ): Promise<WriteStats> {
     const startTime = Date.now();
 
@@ -82,7 +82,7 @@ export class NodeFileSystem implements IFileSystem {
   public async writeJson(
     path: string,
     data: unknown,
-    options: WriteOptions = {}
+    options: FileOperationOptions = {}
   ): Promise<WriteStats> {
     const startTime = Date.now();
 

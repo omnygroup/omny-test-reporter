@@ -21,10 +21,10 @@ export class JsonWriter implements IWriter<unknown> {
 
   public async write(
     data: unknown,
-    options: WriteOptions = {}
+    options: WriteOptions
   ): Promise<Result<WriteStats, Error>> {
     try {
-      const filePath = resolve(this.basePath, 'report.json');
+      const filePath = resolve(this.basePath, options.fileName);
       const stats = await this.fileSystem.writeJson(filePath, data, options);
       return ok(stats);
     } catch (error) {

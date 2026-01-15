@@ -60,7 +60,7 @@ export class GenerateReportUseCase {
       const stats = analytics.getSnapshot();
 
       // Write report
-      const writeResult = await this.writer.write(aggregated);
+      const writeResult = await this.writer.write(aggregated, { fileName: 'report.json' });
 
       if (!writeResult.isOk()) {
         // Return error if write failed

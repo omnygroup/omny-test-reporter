@@ -17,6 +17,7 @@ export type {
   Ok,
   Err,
   BaseConfig,
+  FileOperationOptions,
   WriteOptions,
   WriteStats,
 } from './types/index.js';
