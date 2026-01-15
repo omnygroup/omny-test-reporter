@@ -32,7 +32,7 @@ export default defineConfig({
     },
 
     // Include and exclude patterns
-    include: ['tests/**/*.test.ts'],
+    include: ['tests/**/*.test.ts', 'build/tests/**/*.test.js'],
     exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
 
     // Test reporter

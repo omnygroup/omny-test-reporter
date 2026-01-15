@@ -34,6 +34,8 @@
     "report:tsc": "node app.js diagnostics --run typescript",
     "report:all": "node app.js diagnostics --run all",
     "test": "vitest run",
+    "build:tests": "tsc -p tsconfig.tests.json || true",
+    "test:built": "npm run build:tests && npx vitest run \"build/tests/**/*.test.js\"",
     "test:watch": "vitest watch",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
