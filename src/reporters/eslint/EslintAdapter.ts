@@ -32,7 +32,17 @@ export class EslintAdapter {
         overrideConfigFile: configPath ?? undefined,
       });
 
-      const results = await eslint.lintFiles([...patterns]);
+      let results = [] as any[];
+      try {
+        results = await eslint.lintFiles([...patterns]);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        if (/no files|no matching|nothing matched|matched no files/i.test(msg)) {
+          this.logger.info('ESLint: no files matched patterns', { patterns });
+          return [];
+        }
+        throw e;
+      }
       const diagnostics: RawDiagnosticData[] = [];
 
       results.forEach((result) => {
