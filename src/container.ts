@@ -7,13 +7,14 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 
 // Infrastructure - Logging
+import { type ILogger ,type  IFileSystem ,type  IPathService ,type  ISanitizer } from './core/index.js';
 import { TOKENS } from './diTokens.js';
 import { DiagnosticAggregator } from './domain/analytics/diagnostics/DiagnosticAggregator.js';
 import { DiagnosticAnalytics } from './domain/analytics/diagnostics/DiagnosticAnalytics.js';
 import { DiagnosticMetadataBuilder } from './domain/analytics/diagnostics/DiagnosticMetadataBuilder.js';
+import { TypeScriptAnalytics } from './domain/analytics/typescript/TypeScriptAnalytics.js';
 import { FileReportAssembler } from './domain/mappers/FileReportAssembler.js';
 import { SourceCodeEnricher } from './domain/mappers/SourceCodeEnricher.js';
-import { TypeScriptAnalytics } from './domain/analytics/typescript/TypeScriptAnalytics.js';
 import { ConfigValidator } from './domain/validation/ConfigValidator.js';
 import { DirectoryService } from './infrastructure/filesystem/DirectoryService.js';
 import { FileContentReader } from './infrastructure/filesystem/FileContentReader.js';
@@ -31,22 +32,20 @@ import { UpathService } from './infrastructure/paths/UpathService.js';
 import { PathValidator } from './infrastructure/security/PathValidator.js';
 import { RedactSanitizer } from './infrastructure/security/RedactSanitizer.js';
 import { EslintAdapter } from './reporters/eslint/EslintAdapter.js';
+import { ReportingFacade } from './reporters/ReportingFacade.js';
+import { ReportingOrchestrator } from './reporters/ReportingOrchestrator.js';
 import { TypeScriptAdapter } from './reporters/typescript/TypeScriptAdapter.js';
-
 import { VitestAdapter } from './reporters/vitest/VitestAdapter.js';
-import type { ILogger } from './core/index.js';
+
 
 // Infrastructure - FileSystem
 
-import type { IFileSystem } from './core/index.js';
 
 // Infrastructure - Paths
 
-import type { IPathService } from './core/index.js';
 
 // Infrastructure - Security
 
-import type { ISanitizer } from './core/index.js';
 
 // Infrastructure - Formatting
 
@@ -55,8 +54,6 @@ import type { ISanitizer } from './core/index.js';
 // Domain - Validation
 
 // Reporters
-import { ReportingOrchestrator } from './reporters/ReportingOrchestrator.js';
-import { ReportingFacade } from './reporters/ReportingFacade.js';
 
 // Domain - Analytics (diagnostics collector)
 

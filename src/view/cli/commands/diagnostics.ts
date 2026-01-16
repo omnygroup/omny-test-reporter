@@ -3,10 +3,10 @@
  * @module view/cli/commands/diagnostics
  */
 
-import { CollectDiagnosticsUseCase } from '@application/usecases/CollectDiagnostics';
 import { getContainer } from '@/container';
-import { type ILogger, type Diagnostic, type IFormatter, type IFileSystem } from '@core';
 import { TOKENS } from '@/diTokens';
+import { CollectDiagnosticsUseCase } from '@application/usecases/CollectDiagnostics';
+import { type ILogger, type Diagnostic, type IFormatter, type IFileSystem } from '@core';
 import { DiagnosticAggregator } from '@domain/analytics/diagnostics/DiagnosticAggregator';
 import { DirectoryService } from '@infrastructure/filesystem/index.js';
 import { EslintReporter } from '@reporters/eslint/EslintReporter';

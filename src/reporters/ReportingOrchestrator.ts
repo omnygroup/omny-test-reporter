@@ -6,10 +6,9 @@
 
 import { injectable, inject } from 'inversify';
 
-import { type ILogger, type DiagnosticStatistics, type TestStatistics ,type  Diagnostic } from '@core';
 import { TOKENS } from '@/diTokens';
+import { type ILogger, type DiagnosticStatistics, type TestStatistics ,type  Diagnostic } from '@core';
 import { DiagnosticAnalytics } from '@domain/analytics/diagnostics/DiagnosticAnalytics';
-
 import { EslintAdapter } from '@reporters/eslint/EslintAdapter';
 import { TypeScriptAdapter } from '@reporters/typescript/TypeScriptAdapter';
 import { VitestAdapter } from '@reporters/vitest/VitestAdapter';

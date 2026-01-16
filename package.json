@@ -26,7 +26,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "node parse-tests.mjs",
@@ -72,6 +72,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.7",
+    "vite": "^7.3.1",
     "vitest": "^4.0.17"
   }
 }

@@ -1,5 +1,15 @@
-// ESLint configuration entrypoint — re-export shared Omny config
 import omnyConfig from '@omnygroup/eslint';
 
-export default omnyConfig;
+const projectPaths = ['./tsconfig.json', './tsconfig.vite.json', './tsconfig.test.json'];
+const configs = Array.isArray(omnyConfig) ? omnyConfig.slice() : [omnyConfig];
+
+for (const cfg of configs) {
+  if (!cfg) continue;
+  const parser = cfg.languageOptions?.parserOptions;
+  if (parser && parser.project === true) {
+    parser.project = projectPaths;
+  }
+}
+
+export default configs;
 

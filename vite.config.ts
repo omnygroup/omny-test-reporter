@@ -1,20 +1,12 @@
-import { defineConfig } from 'vite';
 import { resolve } from 'path';
+
+import { defineConfig } from 'vite';
+
+import { getViteAliases } from './vite/alias-resolver/src/index.ts';
 
 export default defineConfig({
   resolve: {
-    alias: {
-      '@core': resolve(__dirname, 'src/core'),
-      '@domain': resolve(__dirname, 'src/domain'),
-      '@infrastructure': resolve(__dirname, 'src/infrastructure'),
-      '@application': resolve(__dirname, 'src/application'),
-      '@reporters': resolve(__dirname, 'src/reporters'),
-      '@view': resolve(__dirname, 'src/view'),
-      '@': resolve(__dirname, 'src'),
-      '@tests': resolve(__dirname, 'tests'),
-      '@utils': resolve(__dirname, 'src/core/utils'),
-      '@types': resolve(__dirname, 'src/core/types')
-    }
+    alias: getViteAliases()
   },
   build: {
     target: 'node16',

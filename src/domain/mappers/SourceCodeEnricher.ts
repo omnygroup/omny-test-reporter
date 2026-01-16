@@ -7,8 +7,9 @@
 import { injectable } from 'inversify';
 
 import { DiagnosticError, type Diagnostic, type DiagnosticFileReport, type DiagnosticSource, type Result, err, ok } from '@core';
-import { FileContentReader } from '@infrastructure/filesystem/index.js';
 import { DiagnosticMetadataBuilder } from '@domain/analytics/diagnostics/index.js';
+import { FileContentReader } from '@infrastructure/filesystem/index.js';
+
 import { FileReportAssembler } from './FileReportAssembler.js';
 
 /**

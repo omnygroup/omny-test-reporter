@@ -7,11 +7,13 @@
 import { injectable, inject } from 'inversify';
 
 import { DiagnosticError, ok, err, type ILogger, type IWriter, type Diagnostic, type Result, type DiagnosticStatistics, type TestStatistics } from '../core/index.js';
-import type { CollectionConfig } from '../domain/index.js';
+import { TOKENS } from '../diTokens.js';
 
 import { ReportingOrchestrator } from './ReportingOrchestrator.js';
 
-import { TOKENS } from '../diTokens.js';
+import type { CollectionConfig } from '../domain/index.js';
+
+
 
 /**
  * Result structure for reporting facade operations

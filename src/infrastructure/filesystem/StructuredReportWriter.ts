@@ -7,8 +7,9 @@
 import { injectable } from 'inversify';
 
 import { FileSystemError, type DiagnosticFileReport, type DiagnosticSource, type IFileSystem, type ILogger, type IPathService, type Result, type WriteStats, err, ok } from '@core';
-import { DirectoryService } from './DirectoryService.js';
 import { DiagnosticMapper } from '@domain/mappers/index.js';
+
+import { DirectoryService } from './DirectoryService.js';
 
 /**
  * Writes diagnostic file reports to structured directory layout

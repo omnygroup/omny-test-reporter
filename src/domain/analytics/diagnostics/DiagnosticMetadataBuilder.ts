@@ -5,6 +5,7 @@
  */
 
 import { type Diagnostic, type DiagnosticReportMetadata, type DiagnosticSource } from '@core';
+
 import { DiagnosticAggregator } from './DiagnosticAggregator.js';
 
 /**
