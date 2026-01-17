@@ -139,13 +139,18 @@ export class StructuredReportWriter {
 
   /**
    * Generate JSON file name from file path
-   * Replaces path separators with underscores
-   * @param filePath File path (relative)
+   * Replaces path separators and invalid characters with underscores
+   * @param filePath File path (absolute or relative)
    * @returns JSON file name
    */
   private generateFileName(filePath: string): string {
-    // Normalize separators and replace with underscores
-    const normalized = this.pathService.normalize(filePath).replace(/\//g, '_');
+    // Convert to relative path if absolute to avoid drive letters (C:) and root prefixes
+    const relativePath = this.pathService.isAbsolute(filePath)
+      ? this.pathService.relative(process.cwd(), filePath)
+      : filePath;
+
+    // Normalize separators and replace both / and : with underscores
+    const normalized = this.pathService.normalize(relativePath).replace(/[:\/]/g, '_');
     return `${normalized}.json`;
   }
 }

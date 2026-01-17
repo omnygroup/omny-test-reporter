@@ -5,12 +5,14 @@
 
 import { getContainer } from '@/container';
 import { TOKENS } from '@/diTokens';
-import { CollectDiagnosticsUseCase } from '@application/usecases/CollectDiagnostics';
+import { GenerateReportUseCase } from '@application/usecases/GenerateReport';
 import { type ILogger, type Diagnostic, type IFormatter, type IFileSystem } from '@core';
 import { DiagnosticAggregator } from '@domain/analytics/diagnostics/DiagnosticAggregator';
 import { DirectoryService } from '@infrastructure/filesystem/index.js';
 import { EslintReporter } from '@reporters/eslint/EslintReporter';
 import { TypeScriptReporter } from '@reporters/typescript/TypeScriptReporter';
+import { SourceCodeEnricher } from '@domain/mappers/SourceCodeEnricher';
+import { StructuredReportWriter } from '@infrastructure/filesystem/StructuredReportWriter';
 
 import type { CollectionConfig } from '@domain/index.js';
 import type { Arguments, CommandBuilder, Argv } from 'yargs';
@@ -21,6 +23,7 @@ export interface DiagnosticsOptions extends Arguments {
   typescript: boolean;
   format: 'json' | 'pretty' | 'table';
   output?: string;
+  verbose: boolean;
   help: boolean;
 }
 
@@ -64,12 +67,14 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
     const logger = container.get<ILogger>(TOKENS.Logger);
     const fileSystem = container.get<IFileSystem>(TOKENS.FileSystem);
 
-    logger.info('Starting diagnostics collection', {
-      patterns: argv.patterns,
-      eslint: argv.eslint,
-      typescript: argv.typescript,
-      format: argv.format,
-    });
+    if (argv.verbose) {
+      logger.info('Starting diagnostics collection', {
+        patterns: argv.patterns,
+        eslint: argv.eslint,
+        typescript: argv.typescript,
+        format: argv.format,
+      });
+    }
 
     // Build collection config
     const config: CollectionConfig = {
@@ -98,22 +103,23 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
       return;
     }
 
-    // Create use case with sources
-    const directoryService = new DirectoryService(fileSystem);
-    const useCase = new CollectDiagnosticsUseCase(sources, DiagnosticAggregator, directoryService);
+    // Create report generation use case with required dependencies
+    const enricher = container.get<SourceCodeEnricher>(TOKENS.SourceCodeEnricher);
+    const writer = container.get<StructuredReportWriter>(TOKENS.StructuredReportWriter);
+    const useCase = new GenerateReportUseCase(sources, enricher, writer);
 
-    // Execute collection
+    // Execute report generation (collects + writes to files)
     const result = await useCase.execute(config);
 
     if (!result.isOk()) {
-      logger.error('Failed to collect diagnostics', result.error);
-      console.error('Error:', result.error.message);
+      logger.error('Failed to generate report', result.error);
+      console.error('\nError:', result.error.message);
       process.exit(1);
     }
 
-    const diagnostics = result.value;
+    const { diagnostics, writeStats } = result.value;
 
-    // Get formatter based on format option
+    // Get formatter based on format option for console output
     if (argv.format === 'json') {
       const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.JsonFormatter);
       const output = formatter.format(diagnostics);
@@ -131,10 +137,16 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
       });
     }
 
-    logger.info('Diagnostics collection completed', {
-      count: diagnostics.length,
-      format: argv.format,
-    });
+    if (argv.verbose) {
+      logger.info('Diagnostics collection completed', {
+        count: diagnostics.length,
+        format: argv.format,
+        filesWritten: writeStats.filesWritten,
+      });
+    }
+
+    console.log(`\nSuccessfully processed ${diagnostics.length} issues.`);
+    console.log(`Detailed reports written to .omnyreporter/ directory (${writeStats.filesWritten} files).`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('Fatal error:', message);
