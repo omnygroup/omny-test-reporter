@@ -5,8 +5,8 @@
 
 import { ESLint } from 'eslint';
 
-import { DiagnosticError ,type  Diagnostic,type  ILogger } from '../../core/index.js';
-import { DiagnosticMapper ,type  RawDiagnosticData } from '../../domain/index.js';
+import { DiagnosticError, type Diagnostic, type ILogger } from '../../core/index.js';
+import { DiagnosticMapper, type RawDiagnosticData } from '../../domain/index.js';
 
 /**
  * Adapter for ESLint API
@@ -34,7 +34,7 @@ export class EslintAdapter {
       // keep instance for potential cleanup
       this.eslint = eslint;
 
-      let results = [] as any[];
+      let results: ESLint.LintResult[] = [];
       try {
         results = await eslint.lintFiles([...patterns]);
       } catch (e) {
@@ -45,23 +45,7 @@ export class EslintAdapter {
         }
         throw e;
       }
-      const diagnostics: RawDiagnosticData[] = [];
-
-      results.forEach((result) => {
-        result.messages.forEach((message: any) => {
-          diagnostics.push({
-            filePath: result.filePath,
-            line: message.line,
-            column: message.column,
-            endLine: message.endLine,
-            endColumn: message.endColumn,
-            severity: message.severity === 2 ? 'error' : 'warning',
-            code: message.ruleId ?? 'unknown',
-            message: message.message,
-            source: 'eslint',
-          });
-        });
-      });
+      const diagnostics: RawDiagnosticData[] = this.buildDiagnostics(results);
 
       const mapper = new DiagnosticMapper();
       const mapped = mapper.mapArray(diagnostics);
@@ -69,21 +53,58 @@ export class EslintAdapter {
       this.logger.info('ESLint completed', { issuesFound: mapped.length });
 
       return mapped;
-      } catch (error) {
+    } catch (error) {
         // Propagate ESLint errors so the CLI can report failures (parsing/config issues)
         throw new DiagnosticError(
           'ESLint linting failed',
           { source: 'eslint' },
           error instanceof Error ? error : undefined
         );
-      } finally {
-        if (this.eslint) {
+    } finally {
+        if (this.eslint !== null) {
           try {
             await this.eslint.lintFiles([]);
-          } catch (_) {
+          } catch {
             // ignore cleanup errors
           }
         }
       }
+  }
+
+  private buildDiagnostics(results: ESLint.LintResult[]): RawDiagnosticData[] {
+    const diagnostics: RawDiagnosticData[] = [];
+
+    for (const result of results) {
+      for (const message of result.messages) {
+        const msg = message as unknown as {
+          line?: number;
+          column?: number;
+          endLine?: number;
+          endColumn?: number;
+          severity?: number;
+          ruleId?: string | null;
+          message: string;
+        };
+
+        const line = msg.line ?? 0;
+        const column = msg.column ?? 0;
+        const endLine = msg.endLine ?? undefined;
+        const endColumn = msg.endColumn ?? undefined;
+
+        diagnostics.push({
+          filePath: result.filePath,
+          line,
+          column,
+          endLine,
+          endColumn,
+          severity: msg.severity === 2 ? 'error' : 'warning',
+          code: msg.ruleId ?? 'unknown',
+          message: msg.message,
+          source: 'eslint',
+        });
+      }
+    }
+
+    return diagnostics;
   }
 }

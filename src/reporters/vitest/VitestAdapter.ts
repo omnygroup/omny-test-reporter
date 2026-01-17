@@ -8,7 +8,7 @@ import { TestAnalytics } from '@domain/analytics/tests/TestAnalytics';
 
 import { TaskProcessor ,type  TestResult } from './TaskProcessor.js';
 
-import type { ILogger } from '@core';
+import type { ILogger, TestStatistics } from '@core';
 
 
 /**
@@ -65,7 +65,7 @@ export class VitestAdapter {
    * Get aggregated test statistics
    * @returns Test statistics snapshot
    */
-  public getTestStatistics() {
+  public getTestStatistics(): TestStatistics {
     return this.analytics.getSnapshot();
   }
 

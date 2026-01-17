@@ -20,11 +20,11 @@ export class MockLogger implements ILogger {
     this.logs.push({ level: 'warn', message, context });
   }
 
-  error(message: string, error?: Error | LogContext, context?: LogContext): void {
+  error(message: string, error?: Error | LogContext, _context?: LogContext): void {
     this.logs.push({ level: 'error', message, context: error as LogContext | undefined });
   }
 
-  child(context: LogContext): ILogger {
+  child(_context: LogContext): ILogger {
     return new MockLogger();
   }
 

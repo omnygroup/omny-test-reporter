@@ -1,7 +1,8 @@
 import { resolve } from 'path';
-import { IMatcherFactory, INormalizedPaths, IAliasMatcher } from '../types';
+
 import { ExactMatcher } from '../matchers/ExactMatcher';
 import { PrefixMatcher } from '../matchers/PrefixMatcher';
+import { IMatcherFactory, INormalizedPaths, IAliasMatcher } from '../types';
 
 export class AliasMatcherFactory implements IMatcherFactory {
   create(normalized: INormalizedPaths, rootDir: string): IAliasMatcher[] {

@@ -40,7 +40,7 @@ export class TableFormatter implements IFormatter<readonly Diagnostic[]> {
 
       table.push([
         chalk.cyan(d.filePath),
-        chalk.gray(`${d.line}:${d.column}`),
+        chalk.gray(`${String(d.line)}:${String(d.column)}`),
         severityColor(d.severity.toUpperCase()),
         chalk.magenta(d.code),
         d.message.substring(0, 40),

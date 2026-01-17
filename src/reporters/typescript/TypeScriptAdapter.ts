@@ -22,10 +22,12 @@ export class TypeScriptAdapter {
   public async check(configPath: string): Promise<readonly Diagnostic[]> {
     try {
       this.logger.info('Starting TypeScript diagnostics', { configPath });
+      await Promise.resolve();
 
-      const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+      const configFile = ts.readConfigFile(configPath, ts.sys.readFile.bind(ts.sys));
 
-      if (configFile.error) {
+      const cfgErr = (configFile as unknown as { error?: unknown }).error;
+      if (cfgErr !== null && typeof cfgErr !== 'undefined') {
         throw new DiagnosticError(
           'Failed to read tsconfig.json',
           { source: 'typescript', configPath },
@@ -33,10 +35,15 @@ export class TypeScriptAdapter {
         );
       }
 
+      const configDir = (() => {
+        const d = configPath.replace(/[^\\/]+$/, '');
+        return d === '' ? './' : d;
+      })();
+
       const parsedConfig = ts.parseJsonConfigFileContent(
         configFile.config,
         ts.sys,
-        configPath.replace(/[^\\/]+$/, '') || './',
+        configDir,
       );
 
       const program = ts.createProgram(parsedConfig.fileNames, parsedConfig.options);
@@ -45,12 +52,13 @@ export class TypeScriptAdapter {
       const mapped: RawDiagnosticData[] = [];
 
       diagnostics.forEach((diagnostic) => {
-        if (!diagnostic.file) return;
+        const file = (diagnostic as unknown as { file?: unknown }).file as ts.SourceFile | undefined;
+        if (file === undefined) return;
 
-        const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start ?? 0);
+        const { line, character } = file.getLineAndCharacterOfPosition(diagnostic.start ?? 0);
 
         mapped.push({
-          filePath: diagnostic.file.fileName,
+          filePath: file.fileName,
           line: line + 1,
           column: character + 1,
           severity: diagnostic.category === ts.DiagnosticCategory.Error ? 'error' : 'warning',

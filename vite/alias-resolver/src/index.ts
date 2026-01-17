@@ -8,11 +8,11 @@ export * from './factory/AliasMatcherFactory';
 export * from './generator/AliasGenerator';
 
 // Default orchestrator for Vite
-import { AliasGenerator } from './generator/AliasGenerator';
-import { TsconfigParser } from './parser/TsconfigParser';
-import { PathNormalizer } from './normalizer/PathNormalizer';
-import { AliasMatcherFactory } from './factory/AliasMatcherFactory';
 import { ViteAliasAdapter, ViteAliasEntry } from './adapters/ViteAliasAdapter';
+import { AliasMatcherFactory } from './factory/AliasMatcherFactory';
+import { AliasGenerator } from './generator/AliasGenerator';
+import { PathNormalizer } from './normalizer/PathNormalizer';
+import { TsconfigParser } from './parser/TsconfigParser';
 
 export function createViteAliasResolver(): AliasGenerator<ViteAliasEntry[]> {
   return new AliasGenerator(

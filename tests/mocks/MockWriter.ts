@@ -13,11 +13,11 @@ export class MockWriter<TData> implements IWriter<TData> {
   private errorToThrow: Error | null = null;
 
   async write(data: TData): Promise<Result<WriteStats, Error>> {
-    if (this.errorToThrow) {
-      return err(this.errorToThrow);
+    if (this.errorToThrow !== null) {
+      return await Promise.resolve(err(this.errorToThrow));
     }
     this.writtenData.push(data);
-    return ok({ bytesWritten: JSON.stringify(data).length, path: 'mock-path' });
+    return await Promise.resolve(ok({ bytesWritten: JSON.stringify(data).length, path: 'mock-path' }));
   }
 
   getWrittenData(): TData[] {

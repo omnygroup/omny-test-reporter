@@ -38,7 +38,7 @@ describe('ConfigValidator', () => {
     });
 
     it('should reject config with missing patterns', () => {
-      const invalidConfig = { ignorePatterns: [] } as any;
+      const invalidConfig = { ignorePatterns: [] } as unknown;
       const result = validator.validate(invalidConfig);
 
       expect(result.isErr()).toBe(true);
@@ -78,7 +78,7 @@ describe('ConfigValidator', () => {
     });
 
     it('should throw ValidationError for invalid input', () => {
-      const invalidConfig = {} as any;
+      const invalidConfig = {} as unknown;
 
       expect(() => validator.validateOrThrow(invalidConfig)).toThrow();
     });

@@ -3,103 +3,115 @@
  * @module tests/integration/usecases/GenerateReport
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { GenerateReportUseCase } from '../../../src/application/usecases';
-import { MockWriter , MockFormatter , MockLogger , createTestDiagnostics } from '../../mocks';
+import { createTestConfig } from '../../helpers/index.js';
+import { MockDiagnosticSource, MockDirectoryService, createTestDiagnostics } from '../../mocks';
 
-import type { DiagnosticReport } from '../../../src/core/types';
+import type { CollectionConfig } from '../../../src/core/types/index.js';
 
 describe('GenerateReportUseCase', () => {
-  let useCase: GenerateReportUseCase<DiagnosticReport>;
-  let mockWriter: MockWriter<DiagnosticReport>;
-  let mockFormatter: MockFormatter<DiagnosticReport[]>;
-  let mockLogger: MockLogger;
+  let useCase: GenerateReportUseCase;
+  let mockSource: MockDiagnosticSource;
+  let mockDirectoryService: MockDirectoryService;
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const createMockEnricher = () => ({
+    enrichAll: vi.fn().mockResolvedValue({ isOk: () => true, value: new Map() }),
+  });
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const createMockWriter = () => ({
+    write: vi.fn().mockResolvedValue({
+      isOk: () => true,
+      value: {
+        filesWritten: 0,
+        bytesWritten: 0,
+        duration: 0,
+        timestamp: new Date(),
+      },
+    }),
+  });
 
   beforeEach(() => {
-    mockWriter = new MockWriter<DiagnosticReport>();
-    mockFormatter = new MockFormatter<DiagnosticReport[]>();
-    mockLogger = new MockLogger();
+    mockSource = new MockDiagnosticSource('eslint');
+    mockDirectoryService = new MockDirectoryService();
 
-    // GenerateReportUseCase now accepts (sources, writer)
-    useCase = new GenerateReportUseCase([], mockWriter);
+    const enricher = createMockEnricher();
+    const writer = createMockWriter();
+
+    // Type cast is necessary for mocking third-party dependencies
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+    useCase = new GenerateReportUseCase(
+      [mockSource],
+      enricher as any,
+      writer as any,
+      mockDirectoryService
+    );
   });
 
   describe('execute', () => {
-    it('should format and write diagnostics', async () => {
-      const diagnostics = createTestDiagnostics(3);
-      const report: DiagnosticReport = {
-        timestamp: new Date(),
-        totalDiagnostics: 3,
-        bySource: { eslint: 3, typescript: 0, vitest: 0 },
-        bySeverity: { error: 3, warning: 0, info: 0, note: 0 },
-        diagnostics: diagnostics,
-      };
+    it('should clear all errors before collection', async () => {
+      const diagnostics = createTestDiagnostics(1, 'eslint');
+      mockSource.setDiagnostics(diagnostics);
 
-      const result = await useCase.execute([report]);
+      const config = createTestConfig();
+      const result = await useCase.execute(config);
 
       expect(result.isOk()).toBe(true);
-      expect(mockWriter.getWrittenData().length).toBeGreaterThan(0);
+      expect(mockDirectoryService.wasClearedAll()).toBe(true);
+    });
+
+    it('should collect diagnostics from sources', async () => {
+      const diagnostics = createTestDiagnostics(3, 'eslint');
+      mockSource.setDiagnostics(diagnostics);
+
+      const config = createTestConfig();
+      const result = await useCase.execute(config);
+
+      expect(result.isOk()).toBe(true);
+      expect(mockSource.getCallCount()).toBe(1);
     });
 
     it('should handle empty diagnostics', async () => {
-      const report: DiagnosticReport = {
-        timestamp: new Date(),
-        totalDiagnostics: 0,
-        bySource: { eslint: 0, typescript: 0, vitest: 0 },
-        bySeverity: { error: 0, warning: 0, info: 0, note: 0 },
-        diagnostics: [],
-      };
+      mockSource.setDiagnostics([]);
 
-      const result = await useCase.execute([report]);
+      const config = createTestConfig();
+      const result = await useCase.execute(config);
 
       expect(result.isOk()).toBe(true);
     });
 
-    it('should write to specified path', async () => {
-      const diagnostics = createTestDiagnostics(1);
-      const report: DiagnosticReport = {
-        timestamp: new Date(),
-        totalDiagnostics: 1,
-        bySource: { eslint: 1, typescript: 0, vitest: 0 },
-        bySeverity: { error: 1, warning: 0, info: 0, note: 0 },
-        diagnostics,
+    it('should pass config to sources', async () => {
+      mockSource.setDiagnostics(createTestDiagnostics(1, 'eslint'));
+
+      const config: CollectionConfig = {
+        patterns: ['custom/**/*.ts'],
+        rootPath: process.cwd(),
+        concurrency: 2,
+        timeout: 5000,
+        cache: true,
+        ignorePatterns: ['node_modules'],
+        eslint: true,
+        typescript: false,
+        configPath: undefined,
       };
 
-      const result = await useCase.execute([report], { path: '/output/report.json' });
+      await useCase.execute(config);
 
-      expect(result.isOk()).toBe(true);
+      expect(mockSource.getCallCount()).toBe(1);
     });
 
-    it('should return error if write fails', async () => {
-      mockWriter.setError(new Error('Write failed'));
+    it('should clear errors even if sources fail', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      mockSource.setError(new Error('Collection failed'));
 
-      const report: DiagnosticReport = {
-        timestamp: new Date(),
-        totalDiagnostics: 0,
-        bySource: { eslint: 0, typescript: 0, vitest: 0 },
-        bySeverity: { error: 0, warning: 0, info: 0, note: 0 },
-        diagnostics: [],
-      };
+      const config = createTestConfig();
+      await useCase.execute(config);
 
-      const result = await useCase.execute([report]);
-
-      expect(result.isErr()).toBe(true);
-    });
-
-    it('should log report generation', async () => {
-      const report: DiagnosticReport = {
-        timestamp: new Date(),
-        totalDiagnostics: 0,
-        bySource: { eslint: 0, typescript: 0, vitest: 0 },
-        bySeverity: { error: 0, warning: 0, info: 0, note: 0 },
-        diagnostics: [],
-      };
-
-      await useCase.execute([report]);
-
-      // Writer should have been called
-      expect(mockWriter.getWrittenData().length).toBeGreaterThan(0);
+      // Should still have cleared errors
+      expect(mockDirectoryService.wasClearedAll()).toBe(true);
     });
   });
 });

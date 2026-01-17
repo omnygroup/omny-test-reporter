@@ -36,22 +36,26 @@ export class PinoLogger implements ILogger {
   }
 
   public debug(message: string, context?: LogContext): void {
-    this.logger.debug(context ?? {}, message);
+    const logger = this.logger;
+    logger.debug(context ?? {}, message);
   }
 
   public info(message: string, context?: LogContext): void {
-    this.logger.info(context ?? {}, message);
+    const logger = this.logger;
+    logger.info(context ?? {}, message);
   }
 
   public warn(message: string, context?: LogContext): void {
-    this.logger.warn(context ?? {}, message);
+    const logger = this.logger;
+    logger.warn(context ?? {}, message);
   }
 
   public error(message: string, error?: Error | LogContext, context?: LogContext): void {
+    const logger = this.logger;
     if (error instanceof Error) {
-      this.logger.error({ ...context, err: error }, message);
+      logger.error({ ...context, err: error }, message);
     } else {
-      this.logger.error(error ?? context ?? {}, message);
+      logger.error(error ?? context ?? {}, message);
     }
   }
 

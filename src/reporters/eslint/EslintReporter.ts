@@ -3,7 +3,7 @@
  * @module reporters/eslint/EslintReporter
  */
 
-import { BaseDiagnosticSource ,type  ILogger } from '../../core/index.js';
+import { BaseDiagnosticSource, type ILogger, type Diagnostic } from '../../core/index.js';
 
 import { EslintAdapter } from './EslintAdapter.js';
 
@@ -21,7 +21,7 @@ export class EslintReporter extends BaseDiagnosticSource {
 		this.adapter = new EslintAdapter(logger);
 	}
 
-	protected async doDiagnosticCollection(config: CollectionConfig) {
+	protected async doDiagnosticCollection(config: CollectionConfig): Promise<readonly Diagnostic[]> {
 		return this.adapter.lint(config.patterns, config.configPath);
 	}
 }

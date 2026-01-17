@@ -8,18 +8,20 @@ import { hideBin } from 'yargs/helpers';
 
 import * as diagnosticsCommand from './commands/diagnostics.js';
 
+// DiagnosticsOptions type removed: not required in this module
+
 /**
  * Build and configure the CLI application
  * @returns Configured yargs instance
  */
-export function getCliApp() {
-  return yargs(hideBin(process.argv))
-    .command(
-      diagnosticsCommand.command,
-      diagnosticsCommand.describe,
-      diagnosticsCommand.builder as any,
-      diagnosticsCommand.handler as any
-    )
+export function getCliApp(): ReturnType<typeof yargs> {
+    return yargs(hideBin(process.argv))
+    .command({
+      command: diagnosticsCommand.command,
+      describe: diagnosticsCommand.describe,
+      builder: diagnosticsCommand.builder,
+      handler: diagnosticsCommand.handler,
+    })
     .option('verbose', {
       alias: 'v',
       describe: 'Enable verbose logging',

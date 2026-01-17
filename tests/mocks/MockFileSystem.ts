@@ -11,14 +11,16 @@ export class MockFileSystem implements IFileSystem {
   private directories = new Set<string>();
 
   async exists(path: string): Promise<boolean> {
+    await Promise.resolve();
     return this.files.has(path) || this.directories.has(path);
   }
 
   async readFile(path: string): Promise<string> {
     const content = this.files.get(path);
-    if (!content) {
+    if (content === undefined) {
       throw new Error(`File not found: ${path}`);
     }
+    await Promise.resolve();
     if (Buffer.isBuffer(content)) {
       return content.toString();
     }
@@ -27,9 +29,10 @@ export class MockFileSystem implements IFileSystem {
 
   async readFileBuffer(path: string): Promise<Buffer> {
     const content = this.files.get(path);
-    if (!content) {
+    if (content === undefined) {
       throw new Error(`File not found: ${path}`);
     }
+    await Promise.resolve();
     if (Buffer.isBuffer(content)) {
       return content;
     }
@@ -37,26 +40,30 @@ export class MockFileSystem implements IFileSystem {
   }
 
   async writeFile(path: string, data: string | Buffer, _options?: WriteOptions): Promise<WriteStats> {
-    const dirPath = path.substring(0, path.lastIndexOf('/'));
-    if (dirPath) {
+    await Promise.resolve();
+    const dirPath = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : '';
+    if (dirPath !== '') {
       this.directories.add(dirPath);
     }
     this.files.set(path, data);
-    return { bytesWritten: Buffer.byteLength(data), path };
+    const bytesWritten = Buffer.isBuffer(data) ? data.length : Buffer.byteLength(data);
+    return { bytesWritten, path };
   }
 
   async writeJson(path: string, data: unknown, _options?: WriteOptions): Promise<WriteStats> {
     const content = JSON.stringify(data, null, 2);
-    return this.writeFile(path, content);
+    return await this.writeFile(path, content);
   }
 
   async ensureDir(path: string): Promise<void> {
     this.directories.add(path);
+    await Promise.resolve();
   }
 
   async remove(path: string): Promise<void> {
     this.files.delete(path);
     this.directories.delete(path);
+    await Promise.resolve();
   }
 
   async readDir(path: string): Promise<string[]> {
@@ -70,6 +77,7 @@ export class MockFileSystem implements IFileSystem {
         }
       }
     }
+    await Promise.resolve();
     return items;
   }
 

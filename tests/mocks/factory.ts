@@ -36,11 +36,11 @@ export function createTestStatistics(overrides?: Partial<Statistics>): Statistic
 export function createTestDiagnostics(count: number, source: 'eslint' | 'typescript' | 'vitest' = 'eslint'): Diagnostic[] {
   return Array.from({ length: count }, (_, i) =>
     createTestDiagnostic({
-      id: `test-diag-${i}`,
+      id: `test-diag-${String(i)}`,
       source,
-      filePath: `/test/file-${i}.ts`,
+      filePath: `/test/file-${String(i)}.ts`,
       line: i + 1,
-      message: `Test diagnostic ${i}`,
+      message: `Test diagnostic ${String(i)}`,
     })
   );
 }

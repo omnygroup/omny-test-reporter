@@ -2,7 +2,7 @@ import { resolve } from 'path';
 
 import { defineConfig } from 'vite';
 
-import { getViteAliases } from './vite/alias-resolver/src/index.ts';
+import { getViteAliases } from './vite/alias-resolver/src/index';
 
 export default defineConfig({
   resolve: {

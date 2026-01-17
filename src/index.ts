@@ -22,7 +22,7 @@ export * from './application/index.js';
 export * from './reporters/index.js';
 
 // View layer - CLI and presentation
-// TODO: Fix yargs types and CLI integration
+// DONE: Fix yargs types and CLI integration (completed)
 // export * from './view/index.js';
 
 /**

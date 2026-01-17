@@ -17,7 +17,7 @@ export class ConsoleFormatter implements IFormatter<Diagnostic> {
   public format(diagnostic: Diagnostic): string {
     const severity = this.formatSeverity(diagnostic.severity);
     const code = chalk.gray(`[${diagnostic.code}]`);
-    const location = chalk.cyan(`${diagnostic.filePath}:${diagnostic.line}:${diagnostic.column}`);
+    const location = chalk.cyan(`${diagnostic.filePath}:${String(diagnostic.line)}:${String(diagnostic.column)}`);
     const message = diagnostic.message;
 
     return `${severity} ${location} ${code} ${message}`;
@@ -42,10 +42,10 @@ export class ConsoleFormatter implements IFormatter<Diagnostic> {
 
     lines.push('');
     lines.push(chalk.bold('─── Summary ───'));
-    lines.push(chalk.red(`  ✖ Errors: ${stats.errorCount}`));
-    lines.push(chalk.yellow(`  ⚠ Warnings: ${stats.warningCount}`));
-    lines.push(chalk.blue(`  ℹ Info: ${stats.infoCount}`));
-    lines.push(chalk.gray(`  ○ Notes: ${stats.noteCount}`));
+    lines.push(chalk.red(`  ✖ Errors: ${String(stats.errorCount)}`));
+    lines.push(chalk.yellow(`  ⚠ Warnings: ${String(stats.warningCount)}`));
+    lines.push(chalk.blue(`  ℹ Info: ${String(stats.infoCount)}`));
+    lines.push(chalk.gray(`  ○ Notes: ${String(stats.noteCount)}`));
     lines.push('');
 
     return lines.join('\n');
@@ -78,28 +78,28 @@ export class ProgressSpinner {
   }
 
   public succeed(text?: string): void {
-    if (this.spinner) {
-      this.spinner.succeed(text ? chalk.green(text) : undefined);
+    if (this.spinner !== null) {
+      this.spinner.succeed(text !== undefined ? chalk.green(text) : undefined);
       this.spinner = null;
     }
   }
 
   public fail(text?: string): void {
-    if (this.spinner) {
-      this.spinner.fail(text ? chalk.red(text) : undefined);
+    if (this.spinner !== null) {
+      this.spinner.fail(text !== undefined ? chalk.red(text) : undefined);
       this.spinner = null;
     }
   }
 
   public warn(text?: string): void {
-    if (this.spinner) {
-      this.spinner.warn(text ? chalk.yellow(text) : undefined);
+    if (this.spinner !== null) {
+      this.spinner.warn(text !== undefined ? chalk.yellow(text) : undefined);
       this.spinner = null;
     }
   }
 
   public stop(): void {
-    if (this.spinner) {
+    if (this.spinner !== null) {
       this.spinner.stop();
       this.spinner = null;
     }

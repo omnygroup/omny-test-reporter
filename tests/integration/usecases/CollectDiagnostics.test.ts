@@ -8,17 +8,20 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { CollectDiagnosticsUseCase } from '../../../src/application/usecases';
 import { DiagnosticAggregator } from '../../../src/domain/analytics/diagnostics/DiagnosticAggregator';
 import { createTestConfig } from '../../helpers';
-import { MockDiagnosticSource , createTestDiagnostics } from '../../mocks';
+import { MockDiagnosticSource , createTestDiagnostics, MockDirectoryService } from '../../mocks';
 
 describe('CollectDiagnosticsUseCase', () => {
   let useCase: CollectDiagnosticsUseCase;
   let mockEslint: MockDiagnosticSource;
   let mockTypescript: MockDiagnosticSource;
+  let mockDirectoryService: MockDirectoryService;
+
   beforeEach(() => {
     mockEslint = new MockDiagnosticSource('eslint');
     mockTypescript = new MockDiagnosticSource('typescript');
+    mockDirectoryService = new MockDirectoryService();
     // Use DiagnosticAggregator class for aggregation
-    useCase = new CollectDiagnosticsUseCase([mockEslint, mockTypescript], DiagnosticAggregator);
+    useCase = new CollectDiagnosticsUseCase([mockEslint, mockTypescript], DiagnosticAggregator, mockDirectoryService);
   });
 
   describe('execute', () => {
@@ -35,6 +38,7 @@ describe('CollectDiagnosticsUseCase', () => {
       expect(result.isOk()).toBe(true);
       const diagnostics = result._unsafeUnwrap();
       expect(diagnostics).toHaveLength(5);
+      expect(mockDirectoryService.wasClearedAll()).toBe(true);
     });
 
     it('should handle errors from individual sources gracefully', async () => {

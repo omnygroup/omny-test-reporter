@@ -32,7 +32,7 @@ export class PathValidator {
     }
 
     // If base path provided, ensure normalized path is within base
-    if (basePath != null && basePath !== '') {
+    if (basePath !== undefined && basePath !== '') {
       const normalizedBase = this.pathService.normalize(basePath);
       const relative = this.pathService.relative(normalizedBase, normalized);
 

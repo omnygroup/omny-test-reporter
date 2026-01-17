@@ -22,7 +22,8 @@ export class MockDiagnosticSource implements IDiagnosticSource {
 
   async collect(_config: CollectionConfig): Promise<Result<readonly Diagnostic[], Error>> {
     this.callCount++;
-    if (this.errorToThrow) {
+    await Promise.resolve();
+    if (this.errorToThrow !== null) {
       return err(this.errorToThrow);
     }
     return ok(this.diagnosticsToReturn as readonly Diagnostic[]);

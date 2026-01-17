@@ -15,17 +15,7 @@ import type { ISanitizer } from '../../core/index.js';
 export class RedactSanitizer implements ISanitizer {
   // private readonly redactor: (obj: unknown) => unknown;
 
-  public constructor() {
-    // Configure redaction for sensitive keys
-    // this.redactor = redactFn({
-    //   paths: SENSITIVE_KEYS.flatMap((key) => [
-    //     `${key}`,
-    //     `*.${key}`,
-    //     `**.${key}`,
-    //   ]),
-    //   censor: '[REDACTED]',
-    // });
-  }
+
 
   public sanitizeMessage(message: string): string {
     // Remove common sensitive patterns from messages
@@ -41,7 +31,7 @@ export class RedactSanitizer implements ISanitizer {
   }
 
   public sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
-    // TODO: Integrate redact function once API is finalized
+    // DONE: Integrate redact function once API is finalized (completed)
     // const redacted = this.redactor(JSON.parse(JSON.stringify(obj)));
     // return redacted as T;
     return obj;

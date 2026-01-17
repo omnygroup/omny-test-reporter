@@ -9,7 +9,7 @@ import { injectable } from 'inversify';
 import { DiagnosticError, ok, err, type IDiagnosticSource, type Diagnostic, type Result, type WriteStats } from '@core';
 import { type CollectionConfig, DiagnosticAnalytics, DiagnosticAggregator } from '@domain';
 import { SourceCodeEnricher } from '@domain/mappers/index.js';
-import { StructuredReportWriter } from '@infrastructure/filesystem/index.js';
+import { DirectoryService, StructuredReportWriter } from '@infrastructure/filesystem/index.js';
 
 /**
  * Result of report generation
@@ -28,7 +28,8 @@ export class GenerateReportUseCase {
   public constructor(
     private readonly sources: readonly IDiagnosticSource[],
     private readonly enricher: SourceCodeEnricher,
-    private readonly writer: StructuredReportWriter
+    private readonly writer: StructuredReportWriter,
+    private readonly directoryService: DirectoryService
   ) {}
 
   /**
@@ -38,6 +39,9 @@ export class GenerateReportUseCase {
    */
   public async execute(config: CollectionConfig): Promise<Result<ReportResult, DiagnosticError>> {
     try {
+      // Clear previous diagnostic errors before collection
+      await this.directoryService.clearAllErrors();
+
       // Collect diagnostics from all sources
       const results = await Promise.allSettled(
         this.sources.map(async (source) => source.collect(config))

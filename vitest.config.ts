@@ -2,6 +2,25 @@ import path from 'path';
 
 import { defineConfig } from 'vitest/config';
 
+const aliasEntries = [
+  ['@', path.resolve(__dirname, './src')],
+  ['@application', path.resolve(__dirname, './src/application')],
+  ['@application/*', path.resolve(__dirname, './src/application/*')],
+  ['@core', path.resolve(__dirname, './src/core')],
+  ['@core/*', path.resolve(__dirname, './src/core/*')],
+  ['@domain', path.resolve(__dirname, './src/domain')],
+  ['@domain/*', path.resolve(__dirname, './src/domain/*')],
+  ['@infrastructure', path.resolve(__dirname, './src/infrastructure')],
+  ['@infrastructure/*', path.resolve(__dirname, './src/infrastructure/*')],
+  ['@reporters', path.resolve(__dirname, './src/reporters')],
+  ['@reporters/*', path.resolve(__dirname, './src/reporters/*')],
+  ['@view', path.resolve(__dirname, './src/view')],
+  ['@view/*', path.resolve(__dirname, './src/view/*')],
+  ['@tests', path.resolve(__dirname, './tests')],
+  ['@utils', path.resolve(__dirname, './src/core/utils')],
+  ['@types', path.resolve(__dirname, './src/core/types')],
+  ['@config', path.resolve(__dirname, './src/core/types/config.ts')],
+] as const;
 export default defineConfig({
   test: {
     // Environment setup
@@ -42,45 +61,9 @@ export default defineConfig({
     testTimeout: 10000,
 
     // Module resolution
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@application': path.resolve(__dirname, './src/application'),
-      '@application/*': path.resolve(__dirname, './src/application/*'),
-      '@core': path.resolve(__dirname, './src/core'),
-      '@core/*': path.resolve(__dirname, './src/core/*'),
-      '@domain': path.resolve(__dirname, './src/domain'),
-      '@domain/*': path.resolve(__dirname, './src/domain/*'),
-      '@infrastructure': path.resolve(__dirname, './src/infrastructure'),
-      '@infrastructure/*': path.resolve(__dirname, './src/infrastructure/*'),
-      '@reporters': path.resolve(__dirname, './src/reporters'),
-      '@reporters/*': path.resolve(__dirname, './src/reporters/*'),
-      '@view': path.resolve(__dirname, './src/view'),
-      '@view/*': path.resolve(__dirname, './src/view/*'),
-      '@tests': path.resolve(__dirname, './tests'),
-      '@utils': path.resolve(__dirname, './src/core/utils'),
-      '@types': path.resolve(__dirname, './src/core/types'),
-      '@config': path.resolve(__dirname, './src/core/types/config.ts'),
-    },
+    alias: Object.fromEntries(aliasEntries) as Record<string, string>,
   },
     resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@application': path.resolve(__dirname, './src/application'),
-      '@application/*': path.resolve(__dirname, './src/application/*'),
-      '@core': path.resolve(__dirname, './src/core'),
-      '@core/*': path.resolve(__dirname, './src/core/*'),
-      '@domain': path.resolve(__dirname, './src/domain'),
-      '@domain/*': path.resolve(__dirname, './src/domain/*'),
-      '@infrastructure': path.resolve(__dirname, './src/infrastructure'),
-      '@infrastructure/*': path.resolve(__dirname, './src/infrastructure/*'),
-      '@reporters': path.resolve(__dirname, './src/reporters'),
-      '@reporters/*': path.resolve(__dirname, './src/reporters/*'),
-      '@view': path.resolve(__dirname, './src/view'),
-      '@view/*': path.resolve(__dirname, './src/view/*'),
-      '@tests': path.resolve(__dirname, './tests'),
-      '@utils': path.resolve(__dirname, './src/core/utils'),
-      '@types': path.resolve(__dirname, './src/core/types'),
-      '@config': path.resolve(__dirname, './src/core/types/config.ts'),
-    },
+    alias: Object.fromEntries(aliasEntries) as Record<string, string>,
   },
 });

@@ -3,7 +3,7 @@
  * @module reporters/typescript/TypeScriptReporter
  */
 
-import { BaseDiagnosticSource ,type  ILogger } from '../../core/index.js';
+import { BaseDiagnosticSource ,type  ILogger, type Diagnostic } from '../../core/index.js';
 
 import { TypeScriptAdapter } from './TypeScriptAdapter.js';
 
@@ -21,7 +21,7 @@ export class TypeScriptReporter extends BaseDiagnosticSource {
 		this.adapter = new TypeScriptAdapter(logger);
 	}
 
-	protected async doDiagnosticCollection(config: CollectionConfig) {
+	protected async doDiagnosticCollection(config: CollectionConfig): Promise<readonly Diagnostic[]> {
 		return this.adapter.check(config.configPath ?? 'tsconfig.json');
 	}
 }

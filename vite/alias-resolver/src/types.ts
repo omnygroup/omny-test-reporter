@@ -9,9 +9,7 @@ export interface IAliasMatcher {
   toDescriptor(): AliasDescriptor;
 }
 
-export interface ITsconfigPaths {
-  [key: string]: string | string[];
-}
+export type ITsconfigPaths = Record<string, string | string[]>;
 
 export interface INormalizedPaths {
   wildcards: Record<string, string>;
@@ -30,10 +28,10 @@ export interface IMatcherFactory {
   create(normalized: INormalizedPaths, rootDir: string): IAliasMatcher[];
 }
 
-export interface IAliasAdapter<T = any> {
+export interface IAliasAdapter<T = unknown> {
   adapt(matchers: IAliasMatcher[]): T;
 }
 
-export interface IAliasGenerator<T = any> {
+export interface IAliasGenerator<T = unknown> {
   generate(rootDir?: string): T;
 }

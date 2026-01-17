@@ -6,13 +6,11 @@
 import { getContainer } from '@/container';
 import { TOKENS } from '@/diTokens';
 import { GenerateReportUseCase } from '@application/usecases/GenerateReport';
-import { type ILogger, type Diagnostic, type IFormatter, type IFileSystem } from '@core';
-import { DiagnosticAggregator } from '@domain/analytics/diagnostics/DiagnosticAggregator';
-import { DirectoryService } from '@infrastructure/filesystem/index.js';
+import { type ILogger, type Diagnostic, type IFormatter } from '@core';
+import { SourceCodeEnricher } from '@domain/mappers/SourceCodeEnricher';
+import { DirectoryService, StructuredReportWriter } from '@infrastructure/filesystem';
 import { EslintReporter } from '@reporters/eslint/EslintReporter';
 import { TypeScriptReporter } from '@reporters/typescript/TypeScriptReporter';
-import { SourceCodeEnricher } from '@domain/mappers/SourceCodeEnricher';
-import { StructuredReportWriter } from '@infrastructure/filesystem/StructuredReportWriter';
 
 import type { CollectionConfig } from '@domain/index.js';
 import type { Arguments, CommandBuilder, Argv } from 'yargs';
@@ -101,14 +99,15 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
     }
 
     if (sources.length === 0) {
-      console.log('No diagnostic sources enabled. Use --eslint or --typescript to enable sources.');
+      logger.warn('No diagnostic sources enabled. Use --eslint or --typescript to enable sources.');
       return;
     }
 
     // Create report generation use case with required dependencies
     const enricher = container.get<SourceCodeEnricher>(TOKENS.SOURCE_CODE_ENRICHER);
     const writer = container.get<StructuredReportWriter>(TOKENS.STRUCTURED_REPORT_WRITER);
-    const useCase = new GenerateReportUseCase(sources, enricher, writer);
+    const directoryService = container.get<DirectoryService>(TOKENS.DIRECTORY_SERVICE);
+    const useCase = new GenerateReportUseCase(sources, enricher, writer, directoryService);
 
     // Execute report generation (collects + writes to files)
     const result = await useCase.execute(config);
@@ -125,17 +124,17 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
     if (argv.format === 'json') {
       const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.JSON_FORMATTER);
       const output = formatter.format(diagnostics);
-      console.log(output);
+      process.stdout.write(output + '\n');
     } else if (argv.format === 'table') {
       const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.TABLE_FORMATTER);
       const output = formatter.format(diagnostics);
-      console.log(output);
+      process.stdout.write(output + '\n');
     } else {
       // pretty format
       const formatter = container.get<IFormatter<Diagnostic>>(TOKENS.CONSOLE_FORMATTER);
       diagnostics.forEach((d) => {
         const output = formatter.format(d);
-        console.log(output);
+        process.stdout.write(output + '\n');
       });
     }
 
@@ -147,12 +146,12 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
       });
     }
 
-    console.log(`\nSuccessfully processed ${diagnostics.length} issues.`);
-    console.log(`Detailed reports written to .omnyreporter/ directory (${writeStats.filesWritten} files).`);
+    process.stdout.write(`\nSuccessfully processed ${String(diagnostics.length)} issues.` + '\n');
+    process.stdout.write(`Detailed reports written to .omnyreporter/ directory (${String(writeStats.filesWritten)} files).` + '\n');
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('Fatal error:', message);
-    if (error instanceof Error && error.stack) {
+    if (error instanceof Error && typeof error.stack === 'string') {
       console.error(error.stack);
     }
     process.exit(1);

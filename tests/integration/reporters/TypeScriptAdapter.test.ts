@@ -51,9 +51,9 @@ describe('TypeScriptReporter', () => {
         const diagnostics = result._unsafeUnwrap();
         expect(Array.isArray(diagnostics)).toBe(true);
         // All diagnostics should have typescript source
-        diagnostics.forEach((diag: any) => {
-          if ('source' in diag) {
-            expect(['typescript']).toContain((diag).source);
+        diagnostics.forEach((diag: { source?: unknown }) => {
+          if (typeof diag.source === 'string') {
+            expect(['typescript']).toContain(diag.source);
           }
         });
       }

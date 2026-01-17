@@ -8,4 +8,5 @@ export { MockFileSystem } from './MockFileSystem.js';
 export { MockDiagnosticSource } from './MockDiagnosticSource.js';
 export { MockWriter } from './MockWriter.js';
 export { MockFormatter } from './MockFormatter.js';
+export { MockDirectoryService } from './MockDirectoryService.js';
 export { createTestDiagnostic, createTestStatistics, createTestDiagnostics } from './factory.js';

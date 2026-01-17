@@ -52,6 +52,7 @@ export class ReportingFacade {
   private readonly orchestrator: ReportingOrchestrator;
   private readonly logger: ILogger;
   private readonly writer: IWriter<readonly Diagnostic[]>;
+  private static readonly DEFAULT_TSCONFIG = 'tsconfig.json';
 
   /**
    * Create a new ReportingFacade instance (dependencies injected)
@@ -83,7 +84,7 @@ export class ReportingFacade {
       }
       
       if (config.typescript) {
-        await this.orchestrator.runTypeScript(config.configPath || 'tsconfig.json');
+        await this.orchestrator.runTypeScript(config.configPath ?? ReportingFacade.DEFAULT_TSCONFIG);
       }
       
       this.orchestrator.initVitestReporter();
@@ -123,8 +124,8 @@ export class ReportingFacade {
         new DiagnosticError(
           'Reporting facade execution failed',
           {
-            patterns: config.patterns.join(', '),
-            configPath: config.configPath || 'none',
+              patterns: config.patterns.join(', '),
+              configPath: typeof config.configPath === 'string' ? config.configPath : 'none',
           },
           error instanceof Error ? error : undefined
         )
@@ -172,7 +173,7 @@ export class ReportingFacade {
    */
   public async collectEslintDiagnostics(config: { patterns?: string[]; timeout?: number }): Promise<{ result: DiagnosticsResult }> {
     try {
-      const patterns = config.patterns || ['src'];
+      const patterns = config.patterns ?? ['src'];
       this.orchestrator.reset();
       await this.orchestrator.runEslint(patterns, undefined);
       const result = this.orchestrator.getResults();
@@ -208,7 +209,7 @@ export class ReportingFacade {
     try {
       this.orchestrator.reset();
       await this.orchestrator.runEslint(['src'], undefined);
-      await this.orchestrator.runTypeScript('tsconfig.json');
+      await this.orchestrator.runTypeScript(ReportingFacade.DEFAULT_TSCONFIG);
       const result = this.orchestrator.getResults();
       
       return {

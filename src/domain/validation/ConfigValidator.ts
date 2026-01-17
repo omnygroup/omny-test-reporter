@@ -5,13 +5,11 @@
 
 // Inversify decorator - import needed for @injectable decorator to work at runtime
 import { injectable } from 'inversify';
+import { z } from 'zod';
 
+import { ValidationError, ok, err, type Result } from '../../core/index.js';
 
-import { ValidationError, ok, err ,type  Result } from '../../core/index.js';
-
-import { CollectionConfigSchema ,type  CollectionConfig } from './schemas/index.js';
-
-import type { ZodSchema } from 'zod';
+import { CollectionConfigSchema, type CollectionConfig } from './schemas/index.js';
 
 /**
  * Facade for configuration validation
@@ -43,11 +41,11 @@ export class ConfigValidator {
    * @param schema Zod schema to validate against
    * @returns Validation result
    */
-  public static validateStatic<T>(data: unknown, schema: ZodSchema): Result<T, ValidationError> {
+  public static validateStatic<T>(data: unknown, schema: z.ZodType<T>): Result<T, ValidationError> {
     const parseResult = schema.safeParse(data);
 
     if (parseResult.success) {
-      return ok(parseResult.data as T);
+      return ok(parseResult.data);
     }
 
     return err(
@@ -64,7 +62,7 @@ export class ConfigValidator {
    * @returns Validated data
    * @throws ValidationError if validation fails
    */
-  public static validateOrThrowStatic<T>(data: unknown, schema: ZodSchema): T {
+  public static validateOrThrowStatic<T>(data: unknown, schema: z.ZodType<T>): T {
     const result = ConfigValidator.validateStatic<T>(data, schema);
 
     if (!result.isOk()) {
@@ -81,7 +79,7 @@ export class ConfigValidator {
    * @returns Validation result
    * @deprecated Use validateStatic instead
    */
-  public static validate<T>(data: unknown, schema: ZodSchema): Result<T, ValidationError> {
+  public static validate<T>(data: unknown, schema: z.ZodType<T>): Result<T, ValidationError> {
     return ConfigValidator.validateStatic<T>(data, schema);
   }
 
@@ -93,7 +91,7 @@ export class ConfigValidator {
    * @throws ValidationError if validation fails
    * @deprecated Use validateOrThrowStatic instead
    */
-  public static validateOrThrow<T>(data: unknown, schema: ZodSchema): T {
+  public static validateOrThrow<T>(data: unknown, schema: z.ZodType<T>): T {
     return ConfigValidator.validateOrThrowStatic<T>(data, schema);
   }
 }
