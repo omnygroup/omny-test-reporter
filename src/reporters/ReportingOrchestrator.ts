@@ -53,11 +53,11 @@ export class ReportingOrchestrator {
    * Create a new ReportingOrchestrator instance (dependencies injected)
    */
   public constructor(
-    @inject(TOKENS.Logger) private readonly logger: ILogger,
-    @inject(TOKENS.EslintAdapter) eslintAdapter: EslintAdapter,
-    @inject(TOKENS.TypeScriptAdapter) typescriptAdapter: TypeScriptAdapter,
-    @inject(TOKENS.VitestAdapter) vitestAdapter: VitestAdapter,
-    @inject(TOKENS.DiagnosticAnalytics) diagnosticAnalytics: DiagnosticAnalytics
+    @inject(TOKENS.LOGGER) private readonly logger: ILogger,
+    @inject(TOKENS.ESLINT_ADAPTER) eslintAdapter: EslintAdapter,
+    @inject(TOKENS.TYPESCRIPT_ADAPTER) typescriptAdapter: TypeScriptAdapter,
+    @inject(TOKENS.VITEST_ADAPTER) vitestAdapter: VitestAdapter,
+    @inject(TOKENS.DIAGNOSTIC_ANALYTICS) diagnosticAnalytics: DiagnosticAnalytics
   ) {
     this.eslintAdapter = eslintAdapter;
     this.typescriptAdapter = typescriptAdapter;

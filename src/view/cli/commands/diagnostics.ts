@@ -62,7 +62,7 @@ export const builder: CommandBuilder<unknown, DiagnosticsOptions> = (yargs: Argv
 export async function handler(argv: DiagnosticsOptions): Promise<void> {
   try {
     const container = getContainer();
-    const logger = container.get<ILogger>(TOKENS.Logger);
+    const logger = container.get<ILogger>(TOKENS.LOGGER);
 
     // Filter tools based on user flags
     // If no flags are provided, both run. If one is provided, only that one runs.
@@ -106,8 +106,8 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
     }
 
     // Create report generation use case with required dependencies
-    const enricher = container.get<SourceCodeEnricher>(TOKENS.SourceCodeEnricher);
-    const writer = container.get<StructuredReportWriter>(TOKENS.StructuredReportWriter);
+    const enricher = container.get<SourceCodeEnricher>(TOKENS.SOURCE_CODE_ENRICHER);
+    const writer = container.get<StructuredReportWriter>(TOKENS.STRUCTURED_REPORT_WRITER);
     const useCase = new GenerateReportUseCase(sources, enricher, writer);
 
     // Execute report generation (collects + writes to files)
@@ -123,16 +123,16 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
 
     // Get formatter based on format option for console output
     if (argv.format === 'json') {
-      const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.JsonFormatter);
+      const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.JSON_FORMATTER);
       const output = formatter.format(diagnostics);
       console.log(output);
     } else if (argv.format === 'table') {
-      const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.TableFormatter);
+      const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.TABLE_FORMATTER);
       const output = formatter.format(diagnostics);
       console.log(output);
     } else {
       // pretty format
-      const formatter = container.get<IFormatter<Diagnostic>>(TOKENS.ConsoleFormatter);
+      const formatter = container.get<IFormatter<Diagnostic>>(TOKENS.CONSOLE_FORMATTER);
       diagnostics.forEach((d) => {
         const output = formatter.format(d);
         console.log(output);

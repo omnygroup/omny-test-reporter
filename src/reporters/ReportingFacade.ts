@@ -60,9 +60,9 @@ export class ReportingFacade {
    * @param writer Writer implementation for diagnostics
    */
   public constructor(
-    @inject(TOKENS.ReportingOrchestrator) orchestrator: ReportingOrchestrator,
-    @inject(TOKENS.Logger) logger: ILogger,
-    @inject(TOKENS.FileWriter) writer: IWriter<readonly Diagnostic[]>
+    @inject(TOKENS.REPORTING_ORCHESTRATOR) orchestrator: ReportingOrchestrator,
+    @inject(TOKENS.LOGGER) logger: ILogger,
+    @inject(TOKENS.FILE_WRITER) writer: IWriter<readonly Diagnostic[]>
   ) {
     this.orchestrator = orchestrator;
     this.logger = logger;

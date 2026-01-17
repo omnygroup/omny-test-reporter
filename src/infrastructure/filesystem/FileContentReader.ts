@@ -15,8 +15,8 @@ import { TOKENS } from '../../diTokens.js';
 @injectable()
 export class FileContentReader {
   public constructor(
-    @inject(TOKENS.FileSystem) private readonly fileSystem: IFileSystem,
-    @inject(TOKENS.PathService) private readonly pathService: IPathService
+    @inject(TOKENS.FILE_SYSTEM) private readonly fileSystem: IFileSystem,
+    @inject(TOKENS.PATH_SERVICE) private readonly pathService: IPathService
   ) {}
 
   /**
