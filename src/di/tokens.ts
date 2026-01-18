@@ -77,8 +77,6 @@ const REPORTERS = {
   ESLINT_ADAPTER: Symbol.for('EslintAdapter'),
   TYPESCRIPT_ADAPTER: Symbol.for('TypeScriptAdapter'),
   VITEST_ADAPTER: Symbol.for('VitestAdapter'),
-  REPORTING_ORCHESTRATOR: Symbol.for('ReportingOrchestrator'),
-  REPORTING_FACADE: Symbol.for('ReportingFacade'),
 } as const;
 
 /**

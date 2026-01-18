@@ -13,29 +13,16 @@ export class DiagnosticAnalytics extends BaseAnalyticsCollector<
   Diagnostic,
   DiagnosticStatistics
 > {
-  private diagnostics: Diagnostic[] = [];
-
   public constructor() {
     super();
   }
 
   /**
-   * Collect a single diagnostic and update statistics
-   * @param diagnostic Single diagnostic to collect
-   * @returns void
-   */
-  public collect(diagnostic: Diagnostic): void {
-    this.diagnostics.push(diagnostic);
-    this.stats = this.calculateStats(this.diagnostics);
-  }
-
-  /**
-   * Collect multiple diagnostics at once
+   * Collect multiple diagnostics and calculate statistics
    * @param diagnostics Array of diagnostics to collect
    */
   public collectAll(diagnostics: readonly Diagnostic[]): void {
-    this.diagnostics.push(...diagnostics);
-    this.stats = this.calculateStats(this.diagnostics);
+    this.stats = this.calculateStats(diagnostics);
   }
 
   /**
@@ -115,18 +102,5 @@ export class DiagnosticAnalytics extends BaseAnalyticsCollector<
       },
       totalByCode: {},
     };
-  }
-
-  /**
-   * Get all collected diagnostics
-   * @returns Array of diagnostics
-   */
-  public getDiagnostics(): readonly Diagnostic[] {
-    return [...this.diagnostics];
-  }
-
-  public override reset(): void {
-    this.diagnostics = [];
-    super.reset();
   }
 }

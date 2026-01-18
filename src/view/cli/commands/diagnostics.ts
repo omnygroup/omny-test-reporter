@@ -4,12 +4,8 @@
  */
 
 import { getContainer, TOKENS } from '@/di/container';
-import { GenerateReportUseCase } from '@application/usecases/GenerateReport';
+import { DiagnosticApplicationService } from '@application/services/DiagnosticApplicationService';
 import { type ILogger, type Diagnostic, type IFormatter } from '@core';
-import { SourceCodeEnricher } from '@domain/mappers/SourceCodeEnricher';
-import { DirectoryService, StructuredReportWriter } from '@infrastructure/filesystem';
-import { EslintReporter } from '@reporters/eslint/EslintReporter';
-import { TypeScriptReporter } from '@reporters/typescript/TypeScriptReporter';
 
 import type { CollectionConfig } from '@domain/index.js';
 import type { Arguments, CommandBuilder, Argv } from 'yargs';
@@ -60,6 +56,7 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
   try {
     const container = getContainer();
     const logger = container.get<ILogger>(TOKENS.LOGGER);
+    const appService = container.get<DiagnosticApplicationService>(TOKENS.DIAGNOSTIC_APPLICATION_SERVICE);
 
     // Filter tools based on user flags
     // If no flags are provided, both run. If one is provided, only that one runs.
@@ -89,28 +86,13 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
       verboseLogging: argv.verbose,
     };
 
-    // Build list of diagnostic sources
-    const sources = [];
-    if (runEslint) {
-      sources.push(new EslintReporter(logger, argv.verbose));
-    }
-    if (runTypescript) {
-      sources.push(new TypeScriptReporter(logger, argv.verbose));
-    }
-
-    if (sources.length === 0) {
+    if (!runEslint && !runTypescript) {
       logger.warn('No diagnostic sources enabled. Use --eslint or --typescript to enable sources.');
       return;
     }
 
-    // Create report generation use case with required dependencies    
-    const enricher = container.get<SourceCodeEnricher>(TOKENS.SOURCE_CODE_ENRICHER);
-    const writer = container.get<StructuredReportWriter>(TOKENS.STRUCTURED_REPORT_WRITER);
-    const directoryService = container.get<DirectoryService>(TOKENS.DIRECTORY_SERVICE);
-    const useCase = new GenerateReportUseCase(sources, enricher, writer, directoryService);
-
-    // Execute report generation (collects + writes to files)
-    const result = await useCase.execute(config);
+    // Execute report generation and writing via application service
+    const result = await appService.generateAndWriteReport(config);
 
     if (!result.isOk()) {
       logger.error('Failed to generate report', result.error);
