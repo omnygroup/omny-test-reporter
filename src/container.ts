@@ -8,7 +8,7 @@ import { Container } from 'inversify';
 
 // Infrastructure - Logging
 import { type ILogger ,type  IFileSystem ,type  IPathService ,type  ISanitizer } from './core/index.js';
-import { TOKENS } from './diTokens.js';
+import { TOKENS } from './DI.js';
 import { DiagnosticAggregator } from './domain/analytics/diagnostics/DiagnosticAggregator.js';
 import { DiagnosticAnalytics } from './domain/analytics/diagnostics/DiagnosticAnalytics.js';
 import { DiagnosticMetadataBuilder } from './domain/analytics/diagnostics/DiagnosticMetadataBuilder.js';

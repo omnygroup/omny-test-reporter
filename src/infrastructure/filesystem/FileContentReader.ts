@@ -7,7 +7,7 @@
 import { injectable, inject } from 'inversify';
 
 import { FileSystemError, type FileContent, type IFileSystem, type IPathService, type Result, ok, err } from '../../core/index.js';
-import { TOKENS } from '../../diTokens.js';
+import { TOKENS } from '../../DI.js';
 
 /**
  * Reads file content and calculates metadata

@@ -4,7 +4,7 @@
  */
 
 import { getContainer } from '@/container';
-import { TOKENS } from '@/diTokens';
+import { TOKENS } from '@/DI';
 import { GenerateReportUseCase } from '@application/usecases/GenerateReport';
 import { type ILogger, type Diagnostic, type IFormatter } from '@core';
 import { SourceCodeEnricher } from '@domain/mappers/SourceCodeEnricher';
