@@ -4,4 +4,5 @@
  */
 
 export { DiagnosticAnalytics } from './DiagnosticAnalytics.js';
-export { DiagnosticAggregator } from './DiagnosticAggregator.js';export { DiagnosticMetadataBuilder } from './DiagnosticMetadataBuilder.js';
+export { DiagnosticAggregator } from './DiagnosticAggregator.js';
+export { DiagnosticMetadataBuilder } from './DiagnosticMetadataBuilder.js';

@@ -5,6 +5,11 @@
 
 import type { Diagnostic, DiagnosticStatistics } from '@core';
 
+/** TODO: Почеу StatisticsCalculator не реализовывает абстракцию? 
+ * К чем это относится? Это реально base или это просто утилита?
+ * Это должен быть класс, реализующий понятную и описанную абстракцию с четким API,
+ * который должен использоваться конкретными инструментами подсчет аналитики (lint, ts, vitest, etc)  */
+
 /**
  * Utility for calculating diagnostic statistics
  */

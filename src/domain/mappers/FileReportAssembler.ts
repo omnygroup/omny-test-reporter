@@ -11,6 +11,7 @@ import { type Diagnostic, type DiagnosticFileReport, type DiagnosticReportMetada
  * Pure function (no state, no dependencies)
  */
 // Keep as class for architectural reasons
+// TODO: Для чего? 
 export class FileReportAssembler {
   /**
    * Assemble file report from components

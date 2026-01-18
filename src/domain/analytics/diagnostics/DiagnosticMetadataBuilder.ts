@@ -12,6 +12,8 @@ import { DiagnosticAggregator } from './DiagnosticAggregator.js';
  * Builds metadata for diagnostic reports
  * Pure function (no state, no dependencies)
  */
+// TODO: Зачем DiagnosticMetadataBuilder отдельный объект? Это должен быть отдельный метод DiagnosticAggregator или утилита?
+// Метаданные должны быть Core DDD
 export const DiagnosticMetadataBuilder = Object.freeze({
   /**
    * Build metadata from diagnostics

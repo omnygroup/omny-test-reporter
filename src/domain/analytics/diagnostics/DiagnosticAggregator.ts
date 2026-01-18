@@ -29,9 +29,12 @@ const aggregate = (sources: readonly (readonly Diagnostic[])[]): readonly Diagno
     results.push(...source);
   }
 
+  // TODO: для чего Object.freeze? Нужно ли это здесь? Либо дать объяснение в комментарии, либо убрать.
   return Object.freeze(results);
 };
 
+// TODO: Повторяется логика StatisticsCalculator.calculateDiagnosticStats? Убрать дублирование кода
+// TODO: Сделать тип Severity токеном или enum'ом, это должно быть Core DDD
 const countBySeverity = (diagnostics: readonly Diagnostic[]): SeverityCount => {
   let error = 0;
   let warning = 0;
@@ -63,6 +66,8 @@ const groupBySource = (diagnostics: readonly Diagnostic[]): GroupedBySources => 
   const typescript: Diagnostic[] = [];
   const vitest: Diagnostic[] = [];
 
+  // TODO: зачем Object.freeze? Нужно ли это здесь? Либо дать объяснение в комментарии, либо убрать.
+  // Сделать название инструментов токенами или enum'ами, это должно быть Core DDD
   for (const diagnostic of diagnostics) {
     if (diagnostic.source === 'eslint') {
       eslint.push(diagnostic);
@@ -122,12 +127,18 @@ const groupBySourceAndFile = (
   for (const source of ['eslint', 'typescript', 'vitest'] as const) {
     const diags = bySource[source];
     const fileMap = groupByFile(diags);
+    // TODO: типизировать без type assertion: https://www.allthingstypescript.dev/p/avoid-using-type-assertions-in-typescript
+    // https://basarat.gitbook.io/typescript/type-system/type-assertion
+    // Добавить отдельный документ про типизацию и best practices по ней
     result.set(source as DiagnosticSource, fileMap);
   }
 
   return result;
 };
 
+// TODO: Это должен быть класс, реализующий абстракцию с четким API
+// Проверить необходимость экспорта всех методов и их использование
+// Отказаться от freeze, если это не нужно
 export const DiagnosticAggregator = Object.freeze({
   aggregate,
   countBySeverity,

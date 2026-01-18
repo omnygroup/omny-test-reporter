@@ -27,9 +27,12 @@ export class DiagnosticAnalytics extends BaseAnalyticsCollector<
    */
   public collect(diagnostic: Diagnostic): void {
     this.diagnostics.push(diagnostic);
+    // TODO: StatisticsCalculator выглядит так, как будто это должно быть композициейный паттерн внутри DiagnosticAnalytics, а не утилита
+    // Или это должен быть метод updateStats внутри BaseAnalyticsCollector?
     this.stats = StatisticsCalculator.calculateDiagnosticStats(this.diagnostics);
   }
 
+  // TODO: Нужен zod
   protected createInitialStats(): DiagnosticStatistics {
     return {
       timestamp: new Date(),

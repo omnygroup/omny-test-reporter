@@ -103,7 +103,7 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
       return;
     }
 
-    // Create report generation use case with required dependencies
+    // Create report generation use case with required dependencies    
     const enricher = container.get<SourceCodeEnricher>(TOKENS.SOURCE_CODE_ENRICHER);
     const writer = container.get<StructuredReportWriter>(TOKENS.STRUCTURED_REPORT_WRITER);
     const directoryService = container.get<DirectoryService>(TOKENS.DIRECTORY_SERVICE);

@@ -40,26 +40,32 @@ export class GenerateReportUseCase {
   public async execute(config: CollectionConfig): Promise<Result<ReportResult, DiagnosticError>> {
     try {
       // Clear previous diagnostic errors before collection
+      // TODO: должно быть уровнем выше, а не частью execute
       await this.directoryService.clearAllErrors();
 
       // Collect diagnostics from all sources
       const results = await Promise.allSettled(
+        // TODO: Нужно видеть как происходит collect для каждого source, потому что в логах этого нет сейчас. Должно быть опционально.
         this.sources.map(async (source) => source.collect(config))
       );
 
+      // TODO: [diagnosticArrays]: start: должно быть часть DiagnosticAggregator
       const diagnosticArrays: Diagnostic[][] = [];
-
       for (const result of results) {
         if (result.status === 'fulfilled' && result.value.isOk()) {
+          // TODO: не должно быть тавтологии с value.value
           diagnosticArrays.push([...result.value.value]);
         }
       }
+      // TODO: [diagnosticArrays]: end.
 
       // Aggregate diagnostics
+      // TODO: DiagnosticAggregator.aggregate делает тоже самое, что и вышеописанный код с diagnosticArrays, объединить код
       const aggregated = DiagnosticAggregator.aggregate(diagnosticArrays);
 
       // Calculate statistics
       const analytics = new DiagnosticAnalytics();
+      // TODO: зачем? Внутри коллект тоже кладет все в массив, убрать дублирование, объединить код
       aggregated.forEach((d) => { analytics.collect(d); });
       const stats = analytics.getSnapshot();
 
@@ -67,9 +73,14 @@ export class GenerateReportUseCase {
       const grouped = DiagnosticAggregator.groupBySourceAndFile(aggregated);
 
       // Filter empty groups
+      // TODO: Почему фильтрация здесь и почему она вообще есть? Это должно быть на этапе перед тем как данные начнут агрерироваться и обрабатываться аналитикой
+      // Это должно быть частью DiagnosticAggregator наверное или сам подумай где лучше
       const filtered = new Map(Array.from(grouped).filter(([, fileMap]) => fileMap.size > 0));
 
       // Enrich with source code
+      // TODO: Зачем нужен этот этап? Там внутри чтение файлов какиех-то.
+      // Зачем чтеине файлов, если данные все собираются в памяти и только в конце они должны быть записаны в файл
+      // Метаданные будут добавляться в другом месте, а значит enricher будет не нужен, так как он делает только чтение файлов
       const enrichResult = await this.enricher.enrichAll(filtered);
 
       if (!enrichResult.isOk()) {
@@ -83,6 +94,7 @@ export class GenerateReportUseCase {
       }
 
       // Write structured reports
+      // TODO: Почему GenerateReportUseCase должен знать о writer? Это должен быть уровень выше, который отвечает за координацию всех этих частей
       const writeResult = await this.writer.write(enrichResult.value);
 
       if (!writeResult.isOk()) {
