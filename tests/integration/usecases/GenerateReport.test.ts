@@ -1,46 +1,42 @@
 /**
- * Integration tests for GenerateReport use case
+ * Integration tests for ReportGenerator
  * @module tests/integration/usecases/GenerateReport
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { GenerateReportUseCase } from '../../../src/application/GenerateReportUseCase';
-import { DiagnosticAggregator } from '../../../src/domain/aggregation/DiagnosticAggregator';
+import { ReportGenerator } from '../../../src/application/ReportGeneratorManager.js';
 import { DiagnosticAnalytics } from '../../../src/domain/analytics/DiagnosticAnalytics';
 import { createTestConfig } from '../../helpers/index.js';
 import { MockDiagnosticSource, MockLogger, createTestDiagnostics } from '../../mocks';
 
 import type { CollectionConfig } from '../../../src/domain/index.js';
 
-describe('GenerateReportUseCase', () => {
-  let useCase: GenerateReportUseCase;
+describe('ReportGenerator', () => {
+  let useCase: ReportGenerator;
   let mockSource: MockDiagnosticSource;
   let mockLogger: MockLogger;
-  let aggregator: DiagnosticAggregator;
   let analytics: DiagnosticAnalytics;
 
   beforeEach(() => {
     mockSource = new MockDiagnosticSource('eslint');
     mockLogger = new MockLogger();
-    aggregator = new DiagnosticAggregator();
     analytics = new DiagnosticAnalytics();
 
-    useCase = new GenerateReportUseCase(
+    useCase = new ReportGenerator(
       [mockSource],
-      aggregator,
       analytics,
       mockLogger
     );
   });
 
-  describe('execute', () => {
+  describe('generate', () => {
     it('should collect diagnostics from sources', async () => {
       const diagnostics = createTestDiagnostics(3, 'eslint');
       mockSource.setDiagnostics(diagnostics);
 
       const config = createTestConfig();
-      const result = await useCase.execute(config);
+      const result = await useCase.generate(config);
 
       expect(result.isOk()).toBe(true);
       expect(mockSource.getCallCount()).toBe(1);
@@ -50,7 +46,7 @@ describe('GenerateReportUseCase', () => {
       mockSource.setDiagnostics([]);
 
       const config = createTestConfig();
-      const result = await useCase.execute(config);
+      const result = await useCase.generate(config);
 
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {
@@ -74,7 +70,7 @@ describe('GenerateReportUseCase', () => {
         verboseLogging: false,
       };
 
-      await useCase.execute(config);
+      await useCase.generate(config);
 
       expect(mockSource.getCallCount()).toBe(1);
     });
@@ -84,7 +80,7 @@ describe('GenerateReportUseCase', () => {
       mockSource.setDiagnostics(diagnostics);
 
       const config = createTestConfig();
-      const result = await useCase.execute(config);
+      const result = await useCase.generate(config);
 
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {
@@ -98,7 +94,7 @@ describe('GenerateReportUseCase', () => {
       mockSource.setError(new Error('Collection failed'));
 
       const config = createTestConfig();
-      const result = await useCase.execute(config);
+      const result = await useCase.generate(config);
 
       // All sources failed, should return error
       expect(result.isErr()).toBe(true);

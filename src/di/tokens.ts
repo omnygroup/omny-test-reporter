@@ -10,7 +10,6 @@
  * - FORMATTING: Formatter implementations
  * - SECURITY: Security services (path validation, sanitization)
  * - ANALYTICS: Domain analytics services
- * - AGGREGATION: Diagnostic aggregation services
  * - VALIDATION: Configuration validation services
  * - REPORTERS: Diagnostic source reporters (ESLint, TypeScript, Vitest)
  * - APPLICATION: Application layer services (use cases, app services)
@@ -101,15 +100,6 @@ const ANALYTICS = {
 } as const;
 
 /**
- * Aggregation domain tokens - Data aggregation services
- * @see registerAggregation.ts
- */
-const AGGREGATION = {
-  /** Diagnostic data aggregator (IDiagnosticAggregator interface) */
-  DIAGNOSTIC_AGGREGATOR: Symbol.for('DiagnosticAggregator'),
-} as const;
-
-/**
  * Validation domain tokens - Configuration validation
  * @see registerValidation.ts
  */
@@ -147,8 +137,8 @@ const REPORTERS = {
  * @see registerApplication.ts
  */
 const APPLICATION = {
-  /** Main report generation use case */
-  GENERATE_REPORT_USE_CASE: Symbol.for('GenerateReportUseCase'),
+  /** Main report generator */
+  REPORT_GENERATOR: Symbol.for('ReportGenerator'),
   /** Diagnostic application service facade */
   DIAGNOSTIC_APPLICATION_SERVICE: Symbol.for('DiagnosticApplicationService'),
 } as const;
@@ -168,7 +158,6 @@ export const TOKENS = {
   ...FORMATTING,
   ...SECURITY,
   ...ANALYTICS,
-  ...AGGREGATION,
   ...VALIDATION,
   ...REPORTERS,
   ...APPLICATION,

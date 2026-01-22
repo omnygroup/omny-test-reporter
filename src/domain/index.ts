@@ -4,7 +4,6 @@
  */
 
 export { DiagnosticAnalytics } from './analytics/DiagnosticAnalytics.js';
-export { DiagnosticAggregator } from './aggregation/DiagnosticAggregator.js';
 
 export {
   ConfigValidator,

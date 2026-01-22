@@ -22,9 +22,9 @@ import {
 import { type CollectionConfig } from '@domain';
 import { DirectoryService, StructuredReportWriter } from '@infrastructure/filesystem/index.js';
 
-import { DiagnosticGrouper } from './DiagnosticGrouper.js';
+import { groupBySourceAndFile } from './DiagnosticGrouper.js';
 import { FileReportBuilder } from './FileReportBuilder.js';
-import { GenerateReportUseCase, type ReportResult } from './GenerateReportUseCase.js';
+import { ReportGenerator, type ReportResult } from './ReportGeneratorManager.js';
 
 /**
  * Complete diagnostic reporting result
@@ -38,24 +38,20 @@ export interface DiagnosticReportingResult extends ReportResult {
  */
 @injectable()
 export class DiagnosticApplicationService {
-  private readonly grouper: DiagnosticGrouper;
   private readonly reportBuilder: FileReportBuilder;
 
   public constructor(
     @inject(TOKENS.LOGGER) private readonly logger: ILogger,
-    @inject(TOKENS.GENERATE_REPORT_USE_CASE)
-    private readonly generateReportUseCase: GenerateReportUseCase,
+    @inject(TOKENS.REPORT_GENERATOR)
+    private readonly reportGenerator: ReportGenerator,
     @inject(TOKENS.STRUCTURED_REPORT_WRITER) private readonly writer: StructuredReportWriter,
     @inject(TOKENS.DIRECTORY_SERVICE) private readonly directoryService: DirectoryService,
     @inject(TOKENS.FILE_SYSTEM) private readonly fileSystem: IFileSystem
   ) {
-    // TODO: Лишние присвения
-    this.grouper = new DiagnosticGrouper();
     this.reportBuilder = new FileReportBuilder(this.fileSystem, this.logger);
   }
 
-  // TODO: generateAndWriteReport -> run
-  public async generateAndWriteReport(
+  public async run(
     config: CollectionConfig
   ): Promise<Result<DiagnosticReportingResult, DiagnosticError>> {
     try {
@@ -117,7 +113,7 @@ export class DiagnosticApplicationService {
     config: CollectionConfig
   ): Promise<Result<ReportResult, DiagnosticError>> {
     this.logger.info('Step 3/4: Collecting and analyzing diagnostics');
-    return this.generateReportUseCase.execute(config);
+    return this.reportGenerator.generate(config);
   }
 
   /**
@@ -149,7 +145,7 @@ export class DiagnosticApplicationService {
   ): Promise<Map<IntegrationName, readonly DiagnosticFileReport[]>> {
     this.logger.info('Step 4/4: Building file reports');
 
-    const grouped = this.grouper.groupBySourceAndFile(diagnostics);
+    const grouped = groupBySourceAndFile(diagnostics);
     const result = new Map<IntegrationName, readonly DiagnosticFileReport[]>();
 
     for (const [source, fileMap] of grouped) {

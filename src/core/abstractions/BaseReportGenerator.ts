@@ -89,4 +89,35 @@ export abstract class BaseReportGenerator implements DiagnosticIntegration {
       return err(this.createDiagnosticError(errorMessage, error));
     }
   }
+
+
+  public static async collectFromSources(
+    sources: readonly DiagnosticIntegration[],
+    config: CollectionConfig
+  ): Promise<{ diagnostics: readonly Diagnostic[]; successCount: number }> {
+    const results = await Promise.allSettled(
+      sources.map(async (source) => source.collect(config))
+    );
+
+    return this.aggregateSettledResults(results);
+  }
+
+  private static aggregateSettledResults(
+    settledResults: readonly PromiseSettledResult<Result<readonly Diagnostic[], Error>>[]
+  ): { diagnostics: readonly Diagnostic[]; successCount: number } {
+    const diagnostics: Diagnostic[] = [];
+    let successCount = 0;
+
+    for (const settledResult of settledResults) {
+      if (settledResult.status === 'fulfilled') {
+        const sourceResult = settledResult.value;
+        if (sourceResult.isOk()) {
+          diagnostics.push(...sourceResult.value);
+          successCount += 1;
+        }
+      }
+    }
+
+    return { diagnostics, successCount };
+  }
 }

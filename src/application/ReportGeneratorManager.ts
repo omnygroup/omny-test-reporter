@@ -1,13 +1,14 @@
 /**
- * Generate report use-case
+ * Report Generator
  * Orchestrates diagnostic collection, aggregation, and analytics
- * @module application/GenerateReportUseCase
+ * @module application/ReportGenerator
  */
 
 import { injectable, multiInject, inject } from 'inversify';
 
 import { TOKENS } from '@/di/tokens.js';
-import { DiagnosticError, ok, err, type DiagnosticIntegration, type IDiagnosticAggregator, type Diagnostic, type DiagnosticStatistics, type Result, type ILogger, IntegrationName } from '@core';
+import { collectFromSources } from '@/infrastructure/utils/ResultAnalyzer.js';
+import { DiagnosticError, ok, err, type DiagnosticIntegration, type Diagnostic, type DiagnosticStatistics, type Result, type ILogger, IntegrationName, BaseReportGenerator } from '@core';
 import { type CollectionConfig } from '@domain';
 import { DiagnosticAnalytics } from '@domain/analytics/DiagnosticAnalytics.js';
 
@@ -18,7 +19,6 @@ export interface SourceStatistics {
   readonly total: number;
   readonly successful: number;
   readonly failed: number;
-  readonly timedOut: number;
 }
 
 /**
@@ -36,21 +36,17 @@ export interface ReportResult {
  *
  * Dependencies:
  * - sources: Diagnostic sources (ESLint, TypeScript reporters)
- * - aggregator: Combines results from multiple sources (uses IDiagnosticAggregator interface)
  * - analytics: Calculates statistics (uses DiagnosticAnalytics for collectAll batch method)
  */
-// TODO: GenerateReportUseCase -> ReportGenerator 
 @injectable()
-export class GenerateReportUseCase {
+export class ReportGenerator {
   public constructor(
     @multiInject(TOKENS.DIAGNOSTIC_INTEGRATION) private readonly sources: DiagnosticIntegration[],
-    @inject(TOKENS.DIAGNOSTIC_AGGREGATOR) private readonly aggregator: IDiagnosticAggregator,
     @inject(TOKENS.DIAGNOSTIC_ANALYTICS) private readonly analytics: DiagnosticAnalytics,
     @inject(TOKENS.LOGGER) private readonly logger: ILogger
   ) {}
 
-  // TODO: execute -> generate
-  public async execute(config: CollectionConfig): Promise<Result<ReportResult, DiagnosticError>> {
+  public async generate(config: CollectionConfig): Promise<Result<ReportResult, DiagnosticError>> {
     try {
       // Filter sources based on configuration
       const activeSources = this.filterActiveSources(config);
@@ -69,54 +65,26 @@ export class GenerateReportUseCase {
         total: activeSources.length,
       });
 
-      const results = await Promise.allSettled(
-        activeSources.map(async (source) => this.collectWithTimeout(source, config))
-      );
-
-      // TODO: вынести у infrastructure
-      let timedOutCount = 0;
-      for (const result of results) {
-        if (
-          result.status === 'rejected' &&
-          result.reason instanceof Error &&
-          result.reason.message.includes('timeout')
-        ) {
-          timedOutCount += 1;
-        }
-      }
-
-      const { diagnostics: aggregated, successCount } = this.aggregator.aggregateResults(results);
-
-      // Check if all sources failed
-      if (successCount === 0) {
-        return err(
-          new DiagnosticError(
-            'All diagnostic sources failed',
-            { sources: activeSources.map((s) => s.getName()).join(', ') }
-          )
-        );
-      }
+      const { diagnostics, successCount } = await BaseReportGenerator.collectFromSources(activeSources, config);
 
       this.logger.info('Diagnostic collection completed', {
-        collected: aggregated.length,
+        collected: diagnostics.length,
         successful: successCount,
         failed: activeSources.length - successCount,
-        timedOut: timedOutCount,
       });
 
       // Calculate statistics
       this.analytics.reset();
-      this.analytics.collectAll(aggregated);
+      this.analytics.collectAll(diagnostics);
       const stats = this.analytics.getSnapshot();
 
       return ok({
-        diagnostics: aggregated,
+        diagnostics,
         stats,
         sourceStats: {
           total: activeSources.length,
           successful: successCount,
           failed: activeSources.length - successCount,
-          timedOut: timedOutCount,
         },
       });
     } catch (error) {

@@ -41,7 +41,6 @@ export type {
   IFormatter,
   IWriter,
   DiagnosticIntegration,
-  IDiagnosticAggregator,
   IAnalyticsCollector,
 } from './contracts/index.js';
 

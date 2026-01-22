@@ -6,13 +6,13 @@
 
 
 import { DiagnosticApplicationService } from '../application/DiagnosticApplicationService.js';
-import { GenerateReportUseCase } from '../application/GenerateReportUseCase.js';
+import { ReportGenerator } from '../application/ReportGeneratorManager.js';
 
 import { TOKENS } from './tokens.js';
 
 import type { Container } from 'inversify';
 
 export function registerApplication(container: Container): void {
-  container.bind(TOKENS.GENERATE_REPORT_USE_CASE).to(GenerateReportUseCase).inTransientScope();
+  container.bind(TOKENS.REPORT_GENERATOR).to(ReportGenerator).inTransientScope();
   container.bind(TOKENS.DIAGNOSTIC_APPLICATION_SERVICE).to(DiagnosticApplicationService).inSingletonScope();
 }

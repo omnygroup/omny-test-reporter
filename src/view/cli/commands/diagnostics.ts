@@ -56,7 +56,6 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
   try {
     const container = getContainer();
     const logger = container.get<ILogger>(TOKENS.LOGGER);
-    // TODO: DiagnosticApplicationService delete from DI
     const appService = container.get<DiagnosticApplicationService>(TOKENS.DIAGNOSTIC_APPLICATION_SERVICE);
 
 
@@ -92,7 +91,7 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
     }
 
     // Execute report generation and writing via application service
-    const result = await appService.generateAndWriteReport(config);
+    const result = await appService.run(config);
 
     if (!result.isOk()) {
       logger.error('Failed to generate report', result.error);

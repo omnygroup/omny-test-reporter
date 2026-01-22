@@ -22,3 +22,6 @@ export { RedactSanitizer, PathValidator } from './security/index.js';
 
 // Formatting
 export { ConsoleFormatter, ProgressSpinner, JsonFormatter, TableFormatter } from './formatting/index.js';
+
+// Utils
+export { countTimedOutResults } from './utils/index.js';

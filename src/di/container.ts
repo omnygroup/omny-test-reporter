@@ -6,7 +6,6 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 
-import { registerAggregation } from './registerAggregation.js';
 import { registerAnalytics } from './registerAnalytics.js';
 import { registerApplication } from './registerApplication.js';
 import { registerFilesystem } from './registerFilesystem.js';
@@ -33,7 +32,6 @@ export function setupContainer(): Container {
   registerSecurity(container);
   registerFilesystem(container);
   registerFormatting(container);
-  registerAggregation(container);
   registerAnalytics(container);
   registerValidation(container);
   registerReporters(container);

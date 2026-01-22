@@ -7,57 +7,54 @@
 import type { Diagnostic, IntegrationName } from '@core';
 
 /**
- * Groups diagnostics for structured reporting
- * Single responsibility: organize diagnostics by source and file
+ * Groups diagnostics by source and file for structured reporting
  */
-export class DiagnosticGrouper {
-  public groupBySourceAndFile(
-    diagnostics: readonly Diagnostic[]
-  ): Map<IntegrationName, Map<string, Diagnostic[]>> {
-    const grouped = new Map<IntegrationName, Map<string, Diagnostic[]>>();
+export function groupBySourceAndFile(
+  diagnostics: readonly Diagnostic[]
+): Map<IntegrationName, Map<string, Diagnostic[]>> {
+  const grouped = new Map<IntegrationName, Map<string, Diagnostic[]>>();
 
-    for (const diagnostic of diagnostics) {
-      this.addDiagnosticToGroup(grouped, diagnostic);
-    }
-
-    return grouped;
+  for (const diagnostic of diagnostics) {
+    addDiagnosticToGroup(grouped, diagnostic);
   }
 
-  private addDiagnosticToGroup(
-    grouped: Map<IntegrationName, Map<string, Diagnostic[]>>,
-    diagnostic: Diagnostic
-  ): void {
-    const fileMap = this.getOrCreateFileMap(grouped, diagnostic.source);
-    const diagnosticList = this.getOrCreateDiagnosticList(fileMap, diagnostic.filePath);
+  return grouped;
+}
 
-    diagnosticList.push(diagnostic);
+function addDiagnosticToGroup(
+  grouped: Map<IntegrationName, Map<string, Diagnostic[]>>,
+  diagnostic: Diagnostic
+): void {
+  const fileMap = getOrCreateFileMap(grouped, diagnostic.source);
+  const diagnosticList = getOrCreateDiagnosticList(fileMap, diagnostic.filePath);
+
+  diagnosticList.push(diagnostic);
+}
+
+function getOrCreateFileMap(
+  grouped: Map<IntegrationName, Map<string, Diagnostic[]>>,
+  source: IntegrationName
+): Map<string, Diagnostic[]> {
+  let fileMap = grouped.get(source);
+
+  if (fileMap === undefined) {
+    fileMap = new Map<string, Diagnostic[]>();
+    grouped.set(source, fileMap);
   }
 
-  private getOrCreateFileMap(
-    grouped: Map<IntegrationName, Map<string, Diagnostic[]>>,
-    source: IntegrationName
-  ): Map<string, Diagnostic[]> {
-    let fileMap = grouped.get(source);
+  return fileMap;
+}
 
-    if (fileMap === undefined) {
-      fileMap = new Map<string, Diagnostic[]>();
-      grouped.set(source, fileMap);
-    }
+function getOrCreateDiagnosticList(
+  fileMap: Map<string, Diagnostic[]>,
+  filePath: string
+): Diagnostic[] {
+  let diagnosticList = fileMap.get(filePath);
 
-    return fileMap;
+  if (diagnosticList === undefined) {
+    diagnosticList = [];
+    fileMap.set(filePath, diagnosticList);
   }
 
-  private getOrCreateDiagnosticList(
-    fileMap: Map<string, Diagnostic[]>,
-    filePath: string
-  ): Diagnostic[] {
-    let diagnosticList = fileMap.get(filePath);
-
-    if (diagnosticList === undefined) {
-      diagnosticList = [];
-      fileMap.set(filePath, diagnosticList);
-    }
-
-    return diagnosticList;
-  }
+  return diagnosticList;
 }
