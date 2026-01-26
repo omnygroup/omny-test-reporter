@@ -8,6 +8,11 @@ import { describe, it, expect } from 'vitest';
 
 import { RedactSanitizer } from '../../../../src/infrastructure/security/RedactSanitizer.js';
 
+const PASSWORD_SECRET_123 = 'password=secret123';
+const PASSWORD_REDACTED = 'password=[REDACTED]';
+const REDACTED = '[REDACTED]';
+const MACOS_USER_PATH = '/Users/johndoe/projects/app/src/file.ts';
+
 describe('RedactSanitizer', () => {
 	describe('sanitizeMessage', () => {
 		it('should redact Base64-like tokens', () => {
@@ -30,11 +35,11 @@ describe('RedactSanitizer', () => {
 
 		it('should redact password patterns', () => {
 			const sanitizer = new RedactSanitizer();
-			const message = 'password=secret123';
+			const message = PASSWORD_SECRET_123;
 
 			const result = sanitizer.sanitizeMessage(message);
 
-			expect(result).toBe('password=[REDACTED]');
+			expect(result).toBe(PASSWORD_REDACTED);
 		});
 
 		it('should redact API key patterns', () => {
@@ -54,14 +59,14 @@ describe('RedactSanitizer', () => {
 					messages: true,
 					objects: true,
 					redactPaths: [],
-					censor: '[REDACTED]',
+					censor: REDACTED,
 				},
 			});
-			const message = 'password=secret123';
+			const message = PASSWORD_SECRET_123;
 
 			const result = sanitizer.sanitizeMessage(message);
 
-			expect(result).toBe('password=secret123');
+			expect(result).toBe(PASSWORD_SECRET_123);
 		});
 
 		it('should not modify message when messages sanitization is disabled', () => {
@@ -72,14 +77,14 @@ describe('RedactSanitizer', () => {
 					messages: false,
 					objects: true,
 					redactPaths: [],
-					censor: '[REDACTED]',
+					censor: REDACTED,
 				},
 			});
-			const message = 'password=secret123';
+			const message = PASSWORD_SECRET_123;
 
 			const result = sanitizer.sanitizeMessage(message);
 
-			expect(result).toBe('password=secret123');
+			expect(result).toBe(PASSWORD_SECRET_123);
 		});
 
 		it('should use custom censor string', () => {
@@ -93,7 +98,7 @@ describe('RedactSanitizer', () => {
 					censor: '***HIDDEN***',
 				},
 			});
-			const message = 'password=secret123';
+			const message = PASSWORD_SECRET_123;
 
 			const result = sanitizer.sanitizeMessage(message);
 
@@ -104,7 +109,7 @@ describe('RedactSanitizer', () => {
 	describe('sanitizePath', () => {
 		it('should sanitize macOS user paths', () => {
 			const sanitizer = new RedactSanitizer();
-			const path = '/Users/johndoe/projects/app/src/file.ts';
+			const path = MACOS_USER_PATH;
 
 			const result = sanitizer.sanitizePath(path);
 
@@ -146,14 +151,14 @@ describe('RedactSanitizer', () => {
 					messages: true,
 					objects: true,
 					redactPaths: [],
-					censor: '[REDACTED]',
+					censor: REDACTED,
 				},
 			});
-			const path = '/Users/johndoe/projects/app/src/file.ts';
+			const path = MACOS_USER_PATH;
 
 			const result = sanitizer.sanitizePath(path);
 
-			expect(result).toBe('/Users/johndoe/projects/app/src/file.ts');
+			expect(result).toBe(MACOS_USER_PATH);
 		});
 
 		it('should not modify path when paths sanitization is disabled', () => {
@@ -164,14 +169,14 @@ describe('RedactSanitizer', () => {
 					messages: true,
 					objects: true,
 					redactPaths: [],
-					censor: '[REDACTED]',
+					censor: REDACTED,
 				},
 			});
-			const path = '/Users/johndoe/projects/app/src/file.ts';
+			const path = MACOS_USER_PATH;
 
 			const result = sanitizer.sanitizePath(path);
 
-			expect(result).toBe('/Users/johndoe/projects/app/src/file.ts');
+			expect(result).toBe(MACOS_USER_PATH);
 		});
 	});
 
@@ -187,7 +192,7 @@ describe('RedactSanitizer', () => {
 			const result = sanitizer.sanitizeObject(obj);
 
 			expect(result.username).toBe('john');
-			expect(result.password).toBe('[REDACTED]');
+			expect(result.password).toBe(REDACTED);
 			expect(result.email).toBe('john@example.com');
 		});
 
@@ -205,8 +210,8 @@ describe('RedactSanitizer', () => {
 			const result = sanitizer.sanitizeObject(obj);
 
 			expect(result.user.name).toBe('john');
-			expect(result.user.password).toBe('[REDACTED]');
-			expect(result.user.token).toBe('[REDACTED]');
+			expect(result.user.password).toBe(REDACTED);
+			expect(result.user.token).toBe(REDACTED);
 		});
 
 		it('should sanitize path-like strings in objects', () => {
@@ -241,7 +246,7 @@ describe('RedactSanitizer', () => {
 					messages: true,
 					objects: true,
 					redactPaths: [],
-					censor: '[REDACTED]',
+					censor: REDACTED,
 				},
 			});
 			const obj = {
@@ -280,14 +285,14 @@ describe('RedactSanitizer', () => {
 		it('should use defaults when no config provided', () => {
 			const sanitizer = new RedactSanitizer();
 
-			expect(sanitizer.sanitizeMessage('password=test')).toBe('password=[REDACTED]');
+			expect(sanitizer.sanitizeMessage('password=test')).toBe(PASSWORD_REDACTED);
 			expect(sanitizer.sanitizePath('/Users/test/file.ts')).toBe('/~/file.ts');
 		});
 
 		it('should use defaults when config is undefined', () => {
 			const sanitizer = new RedactSanitizer(undefined);
 
-			expect(sanitizer.sanitizeMessage('password=test')).toBe('password=[REDACTED]');
+			expect(sanitizer.sanitizeMessage('password=test')).toBe(PASSWORD_REDACTED);
 		});
 	});
 });

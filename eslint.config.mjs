@@ -21,4 +21,4 @@ const configs = (Array.isArray(omnyConfig) ? omnyConfig : [omnyConfig]).map((cfg
 	return cfg;
 });
 
-export default [{ ignores: ['knip.ts'] }, ...configs];
+export default [{ ignores: ['knip.ts', 'omnyreporter.config.ts'] }, ...configs];

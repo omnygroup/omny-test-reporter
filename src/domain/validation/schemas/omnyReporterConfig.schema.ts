@@ -48,13 +48,13 @@ const ReportingConfigSchema = z.object({
  */
 export const OmnyReporterConfigSchema = z.object({
 	/** Sanitization settings */
-	sanitization: SanitizationConfigSchema.default({}),
+	sanitization: SanitizationConfigSchema.default(SanitizationConfigSchema.parse({})),
 
 	/** Collection settings (patterns, concurrency, etc.) */
 	collection: CollectionConfigSchema.partial().default({}),
 
 	/** Reporting settings */
-	reporting: ReportingConfigSchema.default({}),
+	reporting: ReportingConfigSchema.default(ReportingConfigSchema.parse({})),
 
 	/** Enable verbose logging */
 	verbose: z

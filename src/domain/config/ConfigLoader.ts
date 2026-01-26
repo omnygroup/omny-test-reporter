@@ -4,8 +4,9 @@
  * @module domain/config/ConfigLoader
  */
 
-import { injectable, inject } from 'inversify';
 import { pathToFileURL } from 'node:url';
+
+import { injectable, inject } from 'inversify';
 
 import { TOKENS } from '@/di/tokens.js';
 import { ConfigurationError, type IFileSystem, type ILogger, type Result, ok, err } from '@core';
@@ -58,13 +59,13 @@ export class ConfigLoader {
 			if (!parseResult.success) {
 				return err(
 					new ConfigurationError('Invalid configuration', {
-						errors: parseResult.error.errors,
+						errors: parseResult.error.issues,
 					})
 				);
 			}
 
 			this.logger.debug('Configuration loaded', {
-				source: fileConfig ? 'file+env' : 'env+defaults',
+				source: fileConfig !== null ? 'file+env' : 'env+defaults',
 				sanitizationEnabled: parseResult.data.sanitization.enabled,
 			});
 
@@ -192,7 +193,7 @@ export class ConfigLoader {
 		fileConfig: Record<string, unknown> | null,
 		envConfig: Record<string, unknown>
 	): Record<string, unknown> {
-		if (!fileConfig) {
+		if (fileConfig === null) {
 			return envConfig;
 		}
 
@@ -213,10 +214,7 @@ export class ConfigLoader {
 			const targetValue = result[key];
 
 			if (this.isPlainObject(sourceValue) && this.isPlainObject(targetValue)) {
-				result[key] = this.deepMerge(
-					targetValue as Record<string, unknown>,
-					sourceValue as Record<string, unknown>
-				);
+				result[key] = this.deepMerge(targetValue, sourceValue);
 			} else {
 				result[key] = sourceValue;
 			}

@@ -7,6 +7,7 @@ import redactFn from '@pinojs/redact';
 import { injectable, inject, optional } from 'inversify';
 
 import { TOKENS } from '@/di/tokens.js';
+
 import type { ISanitizer } from '@core';
 import type { SanitizationConfig } from '@domain';
 
@@ -54,8 +55,8 @@ export class RedactSanitizer implements ISanitizer {
 		// Initialize redactor with configured paths
 		// serialize: false returns the mutated object instead of JSON string
 		this.redactor = redactFn({
-			paths: this.config.redactPaths ?? DEFAULT_REDACT_PATHS,
-			censor: this.config.censor ?? DEFAULT_CENSOR,
+			paths: this.config.redactPaths,
+			censor: this.config.censor,
 			serialize: false,
 		});
 	}
@@ -70,7 +71,7 @@ export class RedactSanitizer implements ISanitizer {
 			return message;
 		}
 
-		const censor = this.config.censor ?? DEFAULT_CENSOR;
+		const censor = this.config.censor;
 
 		return message
 			// Base64-like tokens (20+ chars)
@@ -132,23 +133,31 @@ export class RedactSanitizer implements ISanitizer {
 	/**
 	 * Recursively sanitize path-like strings in object
 	 */
-	private sanitizePathsInObject(obj: Record<string, unknown>): void {
-		for (const key of Object.keys(obj)) {
-			const value = obj[key];
-
+	private sanitizePathsInObject(objectToSanitize: Record<string, unknown>): void {
+		const entries = Object.entries(objectToSanitize);
+		for (const [key, value] of entries) {
 			if (typeof value === 'string' && this.looksLikePath(value)) {
-				obj[key] = this.sanitizePath(value);
+				// Use Object.assign to set the property without parameter mutation
+				Object.assign(objectToSanitize, { [key]: this.sanitizePath(value) });
 			} else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
 				this.sanitizePathsInObject(value as Record<string, unknown>);
 			} else if (Array.isArray(value)) {
-				for (let i = 0; i < value.length; i++) {
-					const item = value[i];
-					if (typeof item === 'string' && this.looksLikePath(item)) {
-						value[i] = this.sanitizePath(item);
-					} else if (typeof item === 'object' && item !== null) {
-						this.sanitizePathsInObject(item as Record<string, unknown>);
-					}
-				}
+				this.sanitizeArrayItems(value);
+			}
+		}
+	}
+
+	/**
+	 * Sanitize string elements in an array
+	 */
+	private sanitizeArrayItems(arrayToSanitize: unknown[]): void {
+		for (let i = 0; i < arrayToSanitize.length; i++) {
+			const item = arrayToSanitize[i];
+			if (typeof item === 'string' && this.looksLikePath(item)) {
+				// Use splice to modify the array without parameter mutation
+				arrayToSanitize.splice(i, 1, this.sanitizePath(item));
+			} else if (typeof item === 'object' && item !== null) {
+				this.sanitizePathsInObject(item as Record<string, unknown>);
 			}
 		}
 	}

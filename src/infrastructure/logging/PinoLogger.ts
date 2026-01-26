@@ -8,6 +8,7 @@ import { injectable, inject, optional } from 'inversify';
 import pino, { type Logger as PinoLoggerType } from 'pino';
 
 import { TOKENS } from '@/di/tokens.js';
+
 import type { ILogger, LogContext } from '@core';
 import type { SanitizationConfig } from '@domain';
 

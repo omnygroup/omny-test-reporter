@@ -4,5 +4,5 @@
  * @module application
  */
 
-export { ReportGenerator, type ReportResult, type SourceStatistics } from './ReportGeneratorManager.js';
+export { ReportGenerator, type ReportResult, type IntegrationStatistics } from './ReportGeneratorManager.js';
 export { DiagnosticApplicationService, type DiagnosticReportingResult } from './DiagnosticApplicationService.js';

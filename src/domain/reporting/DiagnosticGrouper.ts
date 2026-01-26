@@ -4,8 +4,7 @@
  * @module domain/reporting/DiagnosticGrouper
  */
 
-import type { Diagnostic } from '@core';
-import type { IntegrationName } from '@core';
+import type { Diagnostic, IntegrationName } from '@core';
 
 /**
  * Groups diagnostics by integration and file path

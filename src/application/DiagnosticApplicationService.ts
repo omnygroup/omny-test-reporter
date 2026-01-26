@@ -21,6 +21,7 @@ import {
 } from '@core';
 import { type CollectionConfig, DiagnosticGrouper, FileReportBuilder } from '@domain';
 import { DirectoryService, StructuredReportWriter } from '@infrastructure/filesystem/index.js';
+
 import { ReportGenerator, type ReportResult } from './ReportGeneratorManager.js';
 
 /**
