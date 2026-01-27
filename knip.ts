@@ -7,12 +7,14 @@ const config: KnipConfig = {
 		'src/di/container.ts',
 		'src/di/register*.ts',
 		'src/reporters/vitest/VitestAdapter.ts',
+		'app.js',
 	],
 	project: ['src/**/*.ts'],
 	ignore: ['tests/**/*.ts'],
 	ignoreDependencies: ['@omnygroup/eslint', 'pino-pretty'],
-	ignoreExportsUsedInFile: true,
+	ignoreExportsUsedInFile: { interface: true, type: true },
 	includeEntryExports: true,
+	include: ['classMembers'],
 };
 
 export default config;

@@ -8,6 +8,7 @@ import { Container } from 'inversify';
 
 import { registerAnalytics } from './registerAnalytics.js';
 import { registerApplication } from './registerApplication.js';
+import { registerDeadCode } from './registerDeadCode.js';
 import { registerFilesystem } from './registerFilesystem.js';
 import { registerFormatting } from './registerFormatting.js';
 import { registerLogging } from './registerLogging.js';
@@ -34,6 +35,7 @@ export function setupContainer(): Container {
 	registerFormatting(container);
 	registerAnalytics(container);
 	registerValidation(container);
+	registerDeadCode(container);
 	registerReporters(container);
 	registerApplication(container);
 

@@ -3,6 +3,7 @@
  * @module di/registerReporters
  */
 
+import { DeadCodeReporter } from '../reporters/dead-code/DeadCodeReporter.js';
 import { EslintReporter } from '../reporters/eslint/EslintReporter.js';
 import { TypeScriptReporter } from '../reporters/typescript/TypeScriptReporter.js';
 import { VitestAdapter } from '../reporters/vitest/VitestAdapter.js';
@@ -17,8 +18,10 @@ export function registerReporters(container: Container): void {
 	container.bind(TOKENS.ESLINT_REPORTER).to(EslintReporter).inTransientScope();
 	container.bind(TOKENS.TYPESCRIPT_REPORTER).to(TypeScriptReporter).inTransientScope();
 	container.bind(TOKENS.VITEST_ADAPTER).to(VitestAdapter).inTransientScope();
+	container.bind(TOKENS.DEADCODE_REPORTER).to(DeadCodeReporter).inTransientScope();
 
 	// Bind as DiagnosticIntegration for multi-inject
 	container.bind<DiagnosticIntegration>(TOKENS.DIAGNOSTIC_INTEGRATION).to(EslintReporter).inTransientScope();
 	container.bind<DiagnosticIntegration>(TOKENS.DIAGNOSTIC_INTEGRATION).to(TypeScriptReporter).inTransientScope();
+	container.bind<DiagnosticIntegration>(TOKENS.DIAGNOSTIC_INTEGRATION).to(DeadCodeReporter).inTransientScope();
 }

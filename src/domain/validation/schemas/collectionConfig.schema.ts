@@ -35,6 +35,8 @@ export const CollectionConfigSchema = z.object({
 
 	typescript: z.boolean().default(true).describe('Enable TypeScript checking'),
 
+	deadCode: z.boolean().default(false).describe('Enable dead code analysis'),
+
 	verboseLogging: z.boolean().default(false).describe('Enable verbose logging output from tools'),
 });
 

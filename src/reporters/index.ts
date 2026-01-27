@@ -7,3 +7,4 @@
 export { EslintReporter } from './eslint/index.js';
 export { TypeScriptReporter } from './typescript/index.js';
 export { TaskProcessor, VitestAdapter, type TestResult } from './vitest/index.js';
+export { DeadCodeReporter, DeadCodeAnalyzer } from './dead-code/index.js';

@@ -21,7 +21,9 @@ export type {
 	WriteStats,
 } from './types/index.js';
 
-export { Diagnostic, IntegrationName, ok, err } from './types/index.js';
+export { Diagnostic, IntegrationName, DeadCodeCategory, ok, err } from './types/index.js';
+
+export type { DeadCodeItem, DiBinding, DiResolution, DiGraph } from './types/index.js';
 
 // Contracts
 export type {

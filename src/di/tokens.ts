@@ -135,8 +135,25 @@ const REPORTERS = {
 	TYPESCRIPT_REPORTER: Symbol.for('TypeScriptReporter'),
 	/** Vitest test reporter adapter */
 	VITEST_ADAPTER: Symbol.for('VitestAdapter'),
+	/** Dead code analysis reporter */
+	DEADCODE_REPORTER: Symbol.for('DeadCodeReporter'),
 	/** Multi-inject token for all diagnostic integrations */
 	DIAGNOSTIC_INTEGRATION: Symbol.for('DiagnosticIntegration'),
+} as const;
+
+/**
+ * Dead code analysis tokens - Internal services for DeadCodeReporter
+ * @see registerDeadCode.ts
+ */
+const DEAD_CODE = {
+	/** ts-morph project loader */
+	PROJECT_LOADER: Symbol.for('TsMorphProjectLoader'),
+	/** DI graph builder (parses register*.ts bindings) */
+	DI_GRAPH_BUILDER: Symbol.for('DiGraphBuilder'),
+	/** Reference finder (ts-morph findReferences wrapper) */
+	REFERENCE_FINDER: Symbol.for('TsMorphReferenceFinder'),
+	/** Dead code analyzer orchestrator */
+	DEAD_CODE_ANALYZER: Symbol.for('DeadCodeAnalyzer'),
 } as const;
 
 // ============================================================================
@@ -172,5 +189,6 @@ export const TOKENS = {
 	...VALIDATION,
 	...CONFIG,
 	...REPORTERS,
+	...DEAD_CODE,
 	...APPLICATION,
 } as const;

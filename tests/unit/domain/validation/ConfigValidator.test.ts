@@ -74,6 +74,7 @@ describe('ConfigValidator', () => {
 				cache: false,
 				eslint: true,
 				typescript: true,
+				deadCode: false,
 				verboseLogging: false,
 			});
 		});

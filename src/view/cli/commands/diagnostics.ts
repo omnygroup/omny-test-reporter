@@ -8,20 +8,21 @@ import { DiagnosticApplicationService } from '@application/DiagnosticApplication
 import { type ILogger, type Diagnostic, type IFormatter } from '@core';
 
 import type { CollectionConfig } from '@domain/index.js';
+import type { Container } from 'inversify';
 import type { Arguments, CommandBuilder, Argv } from 'yargs';
 
 export interface DiagnosticsOptions extends Arguments {
 	patterns?: string[];
 	eslint?: boolean;
 	typescript?: boolean;
+	deadCode?: boolean;
 	format: 'json' | 'pretty' | 'table';
 	output?: string;
 	verbose: boolean;
-	help: boolean;
 }
 
 export const command = 'diagnostics [patterns..]';
-export const describe = 'Collect diagnostics from ESLint and TypeScript';
+export const describe = 'Collect diagnostics from ESLint, TypeScript, and dead code analysis';
 
 export const builder: CommandBuilder<unknown, DiagnosticsOptions> = (
 	yargs: Argv<unknown>
@@ -41,6 +42,10 @@ export const builder: CommandBuilder<unknown, DiagnosticsOptions> = (
 			describe: 'Run TypeScript checking (defaults to true if no other tool specified)',
 			type: 'boolean',
 		})
+		.option('dead-code', {
+			describe: 'Run dead code analysis (disabled by default)',
+			type: 'boolean',
+		})
 		.option('format', {
 			describe: 'Output format',
 			type: 'string',
@@ -51,7 +56,12 @@ export const builder: CommandBuilder<unknown, DiagnosticsOptions> = (
 			describe: 'Output file path',
 			type: 'string',
 			alias: 'o',
-		}) as Argv<DiagnosticsOptions>;
+		})
+		.option('verbose', {
+			describe: 'Enable verbose logging',
+			type: 'boolean',
+			default: false,
+		});
 };
 
 export async function handler(argv: DiagnosticsOptions): Promise<void> {
@@ -60,14 +70,16 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
 		const logger = container.get<ILogger>(TOKENS.LOGGER);
 		const appService = container.get<DiagnosticApplicationService>(TOKENS.DIAGNOSTIC_APPLICATION_SERVICE);
 
-		const runEslint = argv.eslint ?? argv.typescript !== true;
-		const runTypescript = argv.typescript ?? argv.eslint !== true;
+		const runDeadCode = argv.deadCode === true;
+		const runEslint = argv.eslint ?? (!runDeadCode && argv.typescript !== true);
+		const runTypescript = argv.typescript ?? (!runDeadCode && argv.eslint !== true);
 
 		if (argv.verbose) {
 			logger.info('Starting diagnostics collection', {
 				patterns: argv.patterns,
 				eslint: runEslint,
 				typescript: runTypescript,
+				deadCode: runDeadCode,
 				format: argv.format,
 			});
 		}
@@ -82,12 +94,13 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
 			ignorePatterns: [],
 			eslint: runEslint,
 			typescript: runTypescript,
+			deadCode: runDeadCode,
 			configPath: undefined,
 			verboseLogging: argv.verbose,
 		};
 
-		if (!runEslint && !runTypescript) {
-			logger.warn('No diagnostic sources enabled. Use --eslint or --typescript to enable sources.');
+		if (!runEslint && !runTypescript && !runDeadCode) {
+			logger.warn('No diagnostic sources enabled. Use --eslint, --typescript, or --dead-code to enable sources.');
 			return;
 		}
 
@@ -102,23 +115,8 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
 
 		const { diagnostics, writeStats } = result.value;
 
-		// Get formatter based on format option for console output
-		if (argv.format === 'json') {
-			const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.JSON_FORMATTER);
-			const output = formatter.format(diagnostics);
-			process.stdout.write(output + '\n');
-		} else if (argv.format === 'table') {
-			const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.TABLE_FORMATTER);
-			const output = formatter.format(diagnostics);
-			process.stdout.write(output + '\n');
-		} else {
-			// pretty format
-			const formatter = container.get<IFormatter<Diagnostic>>(TOKENS.CONSOLE_FORMATTER);
-			diagnostics.forEach((d) => {
-				const output = formatter.format(d);
-				process.stdout.write(output + '\n');
-			});
-		}
+		// Format and print diagnostics to console
+		printDiagnostics(container, argv.format, diagnostics);
 
 		if (argv.verbose) {
 			logger.info('Diagnostics collection completed', {
@@ -139,5 +137,24 @@ export async function handler(argv: DiagnosticsOptions): Promise<void> {
 			console.error(error.stack);
 		}
 		process.exit(1);
+	}
+}
+
+function printDiagnostics(
+	container: Container,
+	format: DiagnosticsOptions['format'],
+	diagnostics: readonly Diagnostic[]
+): void {
+	if (format === 'json') {
+		const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.JSON_FORMATTER);
+		process.stdout.write(formatter.format(diagnostics) + '\n');
+	} else if (format === 'table') {
+		const formatter = container.get<IFormatter<readonly Diagnostic[]>>(TOKENS.TABLE_FORMATTER);
+		process.stdout.write(formatter.format(diagnostics) + '\n');
+	} else {
+		const formatter = container.get<IFormatter<Diagnostic>>(TOKENS.CONSOLE_FORMATTER);
+		diagnostics.forEach((d) => {
+			process.stdout.write(formatter.format(d) + '\n');
+		});
 	}
 }

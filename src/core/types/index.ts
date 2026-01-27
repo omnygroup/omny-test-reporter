@@ -5,6 +5,8 @@
 
 export * from './diagnostic/index';
 
+export * from './dead-code/index';
+
 export type { StatisticsBase, DiagnosticStatistics, TestStatistics } from './statistics.js';
 
 export type { Result, Ok, Err } from './result.js';

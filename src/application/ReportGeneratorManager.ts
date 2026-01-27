@@ -128,6 +128,11 @@ export class ReportGenerator {
 				return !config.typescript ? false : true;
 			}
 
+			// Check DeadCode flag (disabled by default)
+			if (name.includes(IntegrationName.DeadCode)) {
+				return config.deadCode;
+			}
+
 			// Include other integrations (vitest, etc.) by default
 			return true;
 		});
